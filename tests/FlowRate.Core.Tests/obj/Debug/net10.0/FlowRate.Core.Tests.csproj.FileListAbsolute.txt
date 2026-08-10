@@ -98,3 +98,9 @@ C:\Users\gsper\source\repos\FlowRate\tests\FlowRate.Core.Tests\obj\Debug\net10.0
 C:\Users\gsper\source\repos\FlowRate\tests\FlowRate.Core.Tests\obj\Debug\net10.0\FlowRate.Core.Tests.pdb
 C:\Users\gsper\source\repos\FlowRate\tests\FlowRate.Core.Tests\obj\Debug\net10.0\FlowRate.Core.Tests.genruntimeconfig.cache
 C:\Users\gsper\source\repos\FlowRate\tests\FlowRate.Core.Tests\obj\Debug\net10.0\ref\FlowRate.Core.Tests.dll
+C:\Users\gsper\source\repos\FlowRate\tests\FlowRate.Core.Tests\obj\Debug\net10.0\FlowRate.Core.Tests.sourcelink.json
+C:\Users\gsper\source\repos\FlowRate\tests\FlowRate.Core.Tests\bin\Debug\net10.0\Fixtures\flowrate-iperf3-16-stream-forward.json
+C:\Users\gsper\source\repos\FlowRate\tests\FlowRate.Core.Tests\bin\Debug\net10.0\Fixtures\flowrate-iperf3-failure-connection-refused-stdout.txt
+C:\Users\gsper\source\repos\FlowRate\tests\FlowRate.Core.Tests\bin\Debug\net10.0\Fixtures\flowrate-iperf3-failure-dns-stdout.txt
+C:\Users\gsper\source\repos\FlowRate\tests\FlowRate.Core.Tests\bin\Debug\net10.0\Fixtures\flowrate-iperf3-single-stream-reverse.json
+C:\Users\gsper\source\repos\FlowRate\tests\FlowRate.Core.Tests\bin\Debug\net10.0\Fixtures\flowrate-iperf3-single-stream.json
