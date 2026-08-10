@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -20,31 +20,31 @@ public partial class MainViewModel : ObservableObject
     }
 
     [ObservableProperty]
-    private string _serverAddress = "192.168.1.100";
+    public partial string ServerAddress { get; set; } = "192.168.1.100";
 
     [ObservableProperty]
-    private int _port = 5201;
+    public partial int Port { get; set; } = 5201;
 
     [ObservableProperty]
-    private int _durationSeconds = 10;
+    public partial int DurationSeconds { get; set; } = 10;
 
     [ObservableProperty]
-    private bool _reverseMode = false;
+    public partial bool ReverseMode { get; set; } = false;
 
     [ObservableProperty]
-    private int _parallelStreams = 1;
+    public partial int ParallelStreams { get; set; } = 1;
 
     [ObservableProperty]
-    private bool _isRunning = false;
+    public partial bool IsRunning { get; set; } = false;
 
     [ObservableProperty]
-    private string _statusMessage = "Ready";
+    public partial string StatusMessage { get; set; } = "Ready";
 
     [ObservableProperty]
-    private BenchmarkResult? _lastResult;
+    public partial BenchmarkResult? LastResult { get; set; }
 
     [ObservableProperty]
-    private string _resultSummary = string.Empty;
+    public partial string ResultSummary { get; set; } = string.Empty;
 
     // --- Real-time interval reporting (v0.2.0) ---
 
@@ -53,20 +53,20 @@ public partial class MainViewModel : ObservableObject
     /// When false, only the most recent interval and running average are shown.
     /// </summary>
     [ObservableProperty]
-    private bool _showAllIntervals = true;
+    public partial bool ShowAllIntervals { get; set; } = true;
 
     /// <summary>
     /// Rolling text feed of live intervals shown in the "Current Throughput" area.
     /// </summary>
     [ObservableProperty]
-    private string _liveThroughputFeed = string.Empty;
+    public partial string LiveThroughputFeed { get; set; } = string.Empty;
 
     /// <summary>
     /// Latest interval throughput in Gbps.
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CurrentThroughputGbpsText))]
-    private double _currentThroughputGbps;
+    public partial double CurrentThroughputGbps { get; set; }
 
     /// <summary>
     /// Latest interval throughput in Gbps, formatted to three decimal places.
@@ -77,14 +77,14 @@ public partial class MainViewModel : ObservableObject
     /// Latest interval throughput in Mbps.
     /// </summary>
     [ObservableProperty]
-    private double _currentThroughputMbps;
+    public partial double CurrentThroughputMbps { get; set; }
 
     /// <summary>
     /// Running average throughput in Gbps across all intervals so far.
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(AverageThroughputGbpsText))]
-    private double _averageThroughputGbps;
+    public partial double AverageThroughputGbps { get; set; }
 
     /// <summary>
     /// Running average throughput in Gbps, formatted to three decimal places.
@@ -95,20 +95,20 @@ public partial class MainViewModel : ObservableObject
     /// Running average throughput in Mbps across all intervals so far.
     /// </summary>
     [ObservableProperty]
-    private double _averageThroughputMbps;
+    public partial double AverageThroughputMbps { get; set; }
 
     /// <summary>
     /// True once at least one live interval has arrived; used to reveal the live panel.
     /// </summary>
     [ObservableProperty]
-    private bool _hasLiveData;
+    public partial bool HasLiveData { get; set; }
 
     /// <summary>
     /// Auto-scaling full-scale maximum (Mbps) for the speedometer gauge.
     /// Grows to the next "nice" ceiling above the observed peak; never shrinks mid-run.
     /// </summary>
     [ObservableProperty]
-    private double _gaugeMaximumMbps = 100;
+    public partial double GaugeMaximumMbps { get; set; } = 100;
 
     private double _peakMbps;
 
@@ -248,9 +248,9 @@ public partial class MainViewModel : ObservableObject
         var config = result.Configuration;
 
         return $"""
-            ═══════════════════════════════════════════════
+            â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
             FlowRate Benchmark Results
-            ═══════════════════════════════════════════════
+            â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
             Server:       {result.Connection?.RemoteHost ?? "Unknown"}:{result.Connection?.RemotePort ?? 0}
             Client:       {result.Connection?.LocalHost ?? "Unknown"}:{result.Connection?.LocalPort ?? 0}
@@ -260,25 +260,25 @@ public partial class MainViewModel : ObservableObject
             Streams:      {config?.StreamCount}
             Duration:     {config?.DurationSeconds}s
 
-            ───────────────────────────────────────────────
+            â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             Throughput
-            ───────────────────────────────────────────────
+            â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
             Sent:         {summary.Sent.Gbps:F2} Gbps  ({summary.Sent.GigaBytes:F2} GB)
             Received:     {summary.Received.Gbps:F2} Gbps  ({summary.Received.GigaBytes:F2} GB)
 
             Effective:    {summary.EffectiveGbps:F2} Gbps ({summary.EffectiveMbps:F0} Mbps)
 
-            ───────────────────────────────────────────────
+            â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             CPU Utilization
-            ───────────────────────────────────────────────
+            â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
             Local:        {summary.CpuUtilization?.LocalTotal:F1}%  (User: {summary.CpuUtilization?.LocalUser:F1}%, System: {summary.CpuUtilization?.LocalSystem:F1}%)
             Remote:       {summary.CpuUtilization?.RemoteTotal:F1}%  (User: {summary.CpuUtilization?.RemoteUser:F1}%, System: {summary.CpuUtilization?.RemoteSystem:F1}%)
 
             TCP Algorithm: {summary.TcpCongestionAlgorithm ?? "N/A"}
 
-            ═══════════════════════════════════════════════
+            â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
             """;
     }
 }

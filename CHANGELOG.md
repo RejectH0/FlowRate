@@ -1,9 +1,29 @@
-# FlowRate Changelog
+﻿# FlowRate Changelog
 
 All notable changes to this project will be documented in this file.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [0.3.2] - Gauge Fix & Hardening Pass
+
+### Fixed
+- **Speedometer gauge crash**: the gauge threw `System.ArgumentException: Value does not fall within the expected range` at `Path.set_Data` because a `Geometry` built for one `Path` was reassigned to another. The control now builds a fresh, unparented arc `Geometry` on every update, eliminating the crash during live runs.
+- **Missing dial numbers**: the gauge now renders numeric tick labels at each major tick, scaled to the auto-scaling dial maximum (whole numbers for coarse scales, decimals for fine ones).
+- **Erratic needle**: replaced the unstable needle with a tapered triangle that snaps into place on the first frame and animates smoothly (CubicEase) thereafter, so it tracks throughput instead of jumping.
+- **Average marker**: the running average is now a clearly rendered amber rim marker rotated to the average angle, replacing the stray floating dot.
+- **Center readout**: the value/unit readout is written first each update so the number always renders even if a later draw step fails.
+
+### Changed
+- Converted all `MainViewModel` `[ObservableProperty]` fields to `public partial` properties, clearing all 8 `MVVMTK0045` warnings for correct CsWinRT/WinUI marshalling. Build is now warning-free.
+
+### Added
+- **Diagnostics logging**: a lightweight file logger (`FlowRate.Core.Diagnostics.Logger`) plus global exception handlers in `App.xaml.cs` capture startup and crash context to a per-day log file.
+
+### Removed
+- Deleted unused `MainPage.xaml` / `MainPage.xaml.cs` template stubs (no references anywhere in the solution).
 
 ---
 
