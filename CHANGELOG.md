@@ -21,9 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - User has no design background and requested Copilot design the gauge; implemented as a reusable `UserControl` for future restyling.
 - Gauge scale uses Mbps for natural readability; the numeric readouts continue to show Gbps.
 
-### Workflow
-- Adopted default policy: commit and push immediately after a successful build with tests passing, before launching the app for the user to test.
-
 ---
 
 ## [0.2.1] - Live Display Refinements
@@ -66,7 +63,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Strict Milestone 1 focus: iperf3 benchmarking only (no scope creep)
 - Privacy/OPSEC conscious: no telemetry, no cloud dependencies
 - Fixture-driven development: use real iperf3 JSON output for parser design
-- Commit-and-push discipline: every substantial change must be committed for recovery map
 
 ### Repository Setup - 2026/08/10.080000
 
@@ -312,27 +308,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Development Guidelines
 
-### Versioning Strategy
-- **0.x.yy** - Pre-release development (not production-ready)
-- **+0.0.1** - Minor changes, bug fixes, small features
-- **+0.1.0** - Major milestones (real-time updates, gauge, results redesign)
-- **1.0.0** - First public release (when Milestone 1 is feature-complete and polished)
-
-### Commit Discipline
-- Every substantial change must be committed immediately
-- Commit messages must be descriptive and reference functionality
-- Push to GitHub after each commit for recovery safety
-
-### Documentation Requirements
-- `README.md` - Regenerate/update with each iteration to reflect current state
-- `CHANGELOG.md` - **APPEND ONLY** - never purge or remove content
-- Timestamp format: `YYYY/MM/DD.HHMMSS`
-- Document every iteration with context and rationale
-
-### Session Recovery Strategy
-- `CHANGELOG.md` serves as the source of truth for session handoffs
-- Next agent can pick up exactly where work left off
-- All architectural decisions and context preserved
+Project process, versioning, commit discipline, documentation rules, and session-recovery
+strategy are maintained in [`WORKFLOW.md`](WORKFLOW.md).
 
 ---
 

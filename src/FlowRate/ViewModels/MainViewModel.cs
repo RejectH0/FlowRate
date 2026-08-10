@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FlowRate.Core.Domain;
 using FlowRate.Core.Services;
+using FlowRate.Core.Diagnostics;
 using Microsoft.UI.Dispatching;
 
 namespace FlowRate.ViewModels;
@@ -170,40 +171,47 @@ public partial class MainViewModel : ObservableObject
         // Marshal from the iperf3 background thread onto the UI thread.
         _dispatcherQueue.TryEnqueue(() =>
         {
-            var agg = e.Snapshot.Aggregate;
-
-            CurrentThroughputGbps = agg.Gbps;
-            CurrentThroughputMbps = agg.Mbps;
-            AverageThroughputGbps = e.RunningAverageGbps;
-            AverageThroughputMbps = e.RunningAverageMbps;
-            HasLiveData = true;
-
-            // Auto-scale the gauge to the observed peak, snapping to a nice ceiling.
-            var peakCandidate = Math.Max(agg.Mbps, e.RunningAverageMbps);
-            if (peakCandidate > _peakMbps)
+            try
             {
-                _peakMbps = peakCandidate;
-                var ceiling = NiceCeiling(_peakMbps);
-                if (ceiling > GaugeMaximumMbps)
-                    GaugeMaximumMbps = ceiling;
+                var agg = e.Snapshot.Aggregate;
+
+                CurrentThroughputGbps = agg.Gbps;
+                CurrentThroughputMbps = agg.Mbps;
+                AverageThroughputGbps = e.RunningAverageGbps;
+                AverageThroughputMbps = e.RunningAverageMbps;
+                HasLiveData = true;
+
+                // Auto-scale the gauge to the observed peak, snapping to a nice ceiling.
+                var peakCandidate = Math.Max(agg.Mbps, e.RunningAverageMbps);
+                if (peakCandidate > _peakMbps)
+                {
+                    _peakMbps = peakCandidate;
+                    var ceiling = NiceCeiling(_peakMbps);
+                    if (ceiling > GaugeMaximumMbps)
+                        GaugeMaximumMbps = ceiling;
+                }
+
+                var line =
+                    $"[{agg.StartSeconds,5:F1}-{agg.EndSeconds,5:F1}s]  " +
+                    $"{agg.Gbps,6:F2} Gbps  ({agg.Mbps,8:F1} Mbps)   " +
+                    $"avg {e.RunningAverageGbps,6:F2} Gbps";
+
+                if (ShowAllIntervals)
+                {
+                    // Newest interval appears at the top of the feed.
+                    _feedBuilder.Insert(0, line + Environment.NewLine);
+                    LiveThroughputFeed = _feedBuilder.ToString();
+                }
+                else
+                {
+                    LiveThroughputFeed =
+                        $"Interval #{e.Snapshot.IntervalNumber}\n" +
+                        $"{line}";
+                }
             }
-
-            var line =
-                $"[{agg.StartSeconds,5:F1}-{agg.EndSeconds,5:F1}s]  " +
-                $"{agg.Gbps,6:F2} Gbps  ({agg.Mbps,8:F1} Mbps)   " +
-                $"avg {e.RunningAverageGbps,6:F2} Gbps";
-
-            if (ShowAllIntervals)
+            catch (Exception ex)
             {
-                // Newest interval appears at the top of the feed.
-                _feedBuilder.Insert(0, line + Environment.NewLine);
-                LiveThroughputFeed = _feedBuilder.ToString();
-            }
-            else
-            {
-                LiveThroughputFeed =
-                    $"Interval #{e.Snapshot.IntervalNumber}\n" +
-                    $"{line}";
+                Logger.Error("OnIntervalProgress UI update failed", ex);
             }
         });
     }

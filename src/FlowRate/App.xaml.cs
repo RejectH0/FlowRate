@@ -10,6 +10,8 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using FlowRate.Core.Diagnostics;
+using System;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -22,7 +24,7 @@ namespace FlowRate;
 public partial class App : Application
 {
     private Window? _window;
-    
+
     /// <summary>
     /// Initializes the singleton application object.  This is the first line of authored code
     /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -30,6 +32,13 @@ public partial class App : Application
     public App()
     {
         InitializeComponent();
+
+        // Capture otherwise-invisible crashes so we have a real diagnostic trail.
+        UnhandledException += OnUnhandledException;
+        AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
+        System.Threading.Tasks.TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+
+        Logger.Info($"FlowRate starting. Log directory: {Logger.LogDirectory}");
     }
 
     /// <summary>
@@ -40,5 +49,21 @@ public partial class App : Application
     {
         _window = new MainWindow();
         _window.Activate();
+    }
+
+    private void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    {
+        Logger.Error($"Unhandled UI exception: {e.Message}", e.Exception);
+    }
+
+    private void OnDomainUnhandledException(object sender, System.UnhandledExceptionEventArgs e)
+    {
+        Logger.Error("Unhandled AppDomain exception", e.ExceptionObject as Exception);
+    }
+
+    private void OnUnobservedTaskException(object? sender, System.Threading.Tasks.UnobservedTaskExceptionEventArgs e)
+    {
+        Logger.Error("Unobserved task exception", e.Exception);
+        e.SetObserved();
     }
 }
