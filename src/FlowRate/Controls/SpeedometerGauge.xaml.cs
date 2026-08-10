@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -374,9 +374,9 @@ public sealed partial class SpeedometerGauge : UserControl
                 var animation = new DoubleAnimation
                 {
                     To = targetAngle,
-                    Duration = new Duration(TimeSpan.FromMilliseconds(450)),
+                    Duration = new Duration(TimeSpan.FromMilliseconds(950)),
                     EnableDependentAnimation = true,
-                    EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut },
+                    EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
                 };
                 Storyboard.SetTarget(animation, _needleRotate);
                 Storyboard.SetTargetProperty(animation, "Angle");

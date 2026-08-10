@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <Window
 	x:Class="FlowRate.MainWindow"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -131,7 +131,7 @@
 			</Border>
 
 			<!--  ============ Live Throughput Card ============  -->
-			<Border Style="{StaticResource BrandCard}" Visibility="{x:Bind ViewModel.HasLiveData, Mode=OneWay}">
+			<Border Style="{StaticResource BrandCard}">
 				<StackPanel Spacing="16">
 					<Grid>
 						<TextBlock Style="{StaticResource BrandSubtitleText}" Text="Current Throughput" />
@@ -152,9 +152,9 @@
 							Grid.Column="0"
 							VerticalAlignment="Center"
 							Unit="Mbps"
-							Average="{x:Bind ViewModel.AverageThroughputMbps, Mode=OneWay}"
+							Average="{x:Bind ViewModel.CurrentThroughputMbps, Mode=OneWay}"
 							Maximum="{x:Bind ViewModel.GaugeMaximumMbps, Mode=OneWay}"
-							Value="{x:Bind ViewModel.CurrentThroughputMbps, Mode=OneWay}" />
+							Value="{x:Bind ViewModel.AverageThroughputMbps, Mode=OneWay}" />
 
 						<StackPanel
 							Grid.Column="1"
@@ -169,12 +169,12 @@
 										VerticalAlignment="Center"
 										Background="{StaticResource BrandGreenBrush}"
 										CornerRadius="3" />
-									<TextBlock Style="{StaticResource BrandCaptionText}" Text="CURRENT (NEEDLE)" />
+									<TextBlock Style="{StaticResource BrandCaptionText}" Text="AVERAGE (NEEDLE)" />
 								</StackPanel>
 								<TextBlock
 									behaviors:NumberAnimator.Format="F3"
 									behaviors:NumberAnimator.Suffix=" Gbps"
-									behaviors:NumberAnimator.Value="{x:Bind ViewModel.CurrentThroughputGbps, Mode=OneWay}"
+									behaviors:NumberAnimator.Value="{x:Bind ViewModel.AverageThroughputGbps, Mode=OneWay}"
 									Foreground="{StaticResource BrandSpeedGradient}"
 									Style="{StaticResource BrandDisplayText}" />
 							</StackPanel>
@@ -188,12 +188,12 @@
 										VerticalAlignment="Center"
 										Background="{StaticResource BrandAmberBrush}"
 										CornerRadius="3" />
-									<TextBlock Style="{StaticResource BrandCaptionText}" Text="AVERAGE (MARKER)" />
+									<TextBlock Style="{StaticResource BrandCaptionText}" Text="CURRENT (MARKER)" />
 								</StackPanel>
 								<TextBlock
 									behaviors:NumberAnimator.Format="F3"
 									behaviors:NumberAnimator.Suffix=" Gbps"
-									behaviors:NumberAnimator.Value="{x:Bind ViewModel.AverageThroughputGbps, Mode=OneWay}"
+									behaviors:NumberAnimator.Value="{x:Bind ViewModel.CurrentThroughputGbps, Mode=OneWay}"
 									Foreground="{ThemeResource TextFillColorPrimaryBrush}"
 									Style="{StaticResource BrandDisplayText}" />
 							</StackPanel>

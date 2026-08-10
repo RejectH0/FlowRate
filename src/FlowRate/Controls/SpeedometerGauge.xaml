@@ -10,7 +10,7 @@
     <!--  The gauge is drawn dynamically into this Canvas on size changes.  -->
     <Canvas
         x:Name="GaugeCanvas"
-        Width="320"
-        Height="220"
+        Width="360"
+        Height="240"
         SizeChanged="OnCanvasSizeChanged" />
 </UserControl>

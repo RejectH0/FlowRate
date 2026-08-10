@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.1] - Responsive Window & Smoother Gauge
+
+### Changed
+- **Window sizing** (`src/FlowRate/MainWindow.xaml.cs`): the window now launches at a sensible default size (1040x920) and is centered on the primary work area, so it no longer opens cramped or biased to one side. The layout remains fully responsive as the window is resized or maximized.
+- **Gauge always visible** (`src/FlowRate/MainWindow.xaml`): the live throughput card (and its speedometer gauge) is now shown from launch instead of appearing only after the first interval arrives, giving a stable, non-shifting layout.
+- **Smoother needle** (`src/FlowRate/Controls/SpeedometerGauge.xaml.cs`): the needle now tracks the running average (a naturally smoother signal) rather than the jittery per-interval current value, and its sweep animation was lengthened to ~950ms with an ease-in-out curve so motion reads as fluid and trustworthy rather than herky-jerky. The instantaneous current value is now shown by the rim marker.
+- Legend and readouts updated so the needle is labelled AVERAGE and the marker is labelled CURRENT, matching the new gauge behavior.
+
+---
+
 ## [0.4.0] - Branded Visual Overhaul
 
 ### Added
