@@ -1,209 +1,235 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <Window
-    x:Class="FlowRate.MainWindow"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="using:FlowRate"
-    xmlns:controls="using:FlowRate.Controls"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="using:FlowRate.ViewModels"
-    Title="FlowRate - Network Benchmark"
-    mc:Ignorable="d">
-    <Window.SystemBackdrop>
-        <MicaBackdrop />
-    </Window.SystemBackdrop>
+	x:Class="FlowRate.MainWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:behaviors="using:FlowRate.Behaviors"
+	xmlns:controls="using:FlowRate.Controls"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:local="using:FlowRate"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:FlowRate.ViewModels"
+	Title="FlowRate - Network Benchmark"
+	mc:Ignorable="d">
+	<Window.SystemBackdrop>
+		<MicaBackdrop />
+	</Window.SystemBackdrop>
 
-    <Grid Padding="24">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+	<ScrollViewer Padding="28,24,28,28" VerticalScrollBarVisibility="Auto">
+		<StackPanel MaxWidth="1180" Spacing="20">
 
-        <!--  Header  -->
-        <StackPanel Grid.Row="0" Margin="0,0,0,24">
-            <TextBlock
-                FontSize="28"
-                FontWeight="SemiBold"
-                Text="FlowRate" />
-            <TextBlock
-                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                Text="Network Benchmark Tool powered by iperf3" />
-        </StackPanel>
+			<!--  ============ Branded Header ============  -->
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
 
-        <!--  Configuration  -->
-        <StackPanel Grid.Row="1" Spacing="12">
-            <Grid ColumnSpacing="12">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+				<!--  Accent glyph badge  -->
+				<Border
+					Grid.Column="0"
+					Width="52"
+					Height="52"
+					Margin="0,0,16,0"
+					VerticalAlignment="Center"
+					Background="{StaticResource BrandAccentGradient}"
+					CornerRadius="14">
+					<FontIcon
+						FontSize="26"
+						Foreground="White"
+						Glyph="&#xE9D9;" />
+				</Border>
 
-                <TextBox
-                    Grid.Column="0"
-                    Header="Server Address"
-                    PlaceholderText="e.g., 192.168.1.100 or server.local"
-                    Text="{x:Bind ViewModel.ServerAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+				<StackPanel Grid.Column="1" VerticalAlignment="Center">
+					<TextBlock Style="{StaticResource BrandTitleText}" Text="FlowRate" />
+					<TextBlock
+						Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+						Text="Network Benchmark Tool powered by iperf3" />
+				</StackPanel>
+			</Grid>
 
-                <NumberBox
-                    Grid.Column="1"
-                    Width="100"
-                    Header="Port"
-                    Maximum="65535"
-                    Minimum="1"
-                    SpinButtonPlacementMode="Compact"
-                    Value="{x:Bind ViewModel.Port, Mode=TwoWay}" />
-            </Grid>
+			<!--  ============ Configuration Card ============  -->
+			<Border Style="{StaticResource BrandCard}">
+				<StackPanel Spacing="14">
+					<TextBlock Style="{StaticResource BrandCaptionText}" Text="TEST CONFIGURATION" />
 
-            <Grid ColumnSpacing="12">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+					<Grid ColumnSpacing="12">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
 
-                <NumberBox
-                    Grid.Column="0"
-                    Header="Duration (seconds)"
-                    Maximum="3600"
-                    Minimum="1"
-                    SpinButtonPlacementMode="Compact"
-                    Value="{x:Bind ViewModel.DurationSeconds, Mode=TwoWay}" />
+						<TextBox
+							Grid.Column="0"
+							Header="Server Address"
+							PlaceholderText="e.g., 192.168.1.100 or server.local"
+							Text="{x:Bind ViewModel.ServerAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                <NumberBox
-                    Grid.Column="1"
-                    Header="Parallel Streams"
-                    Maximum="128"
-                    Minimum="1"
-                    SpinButtonPlacementMode="Compact"
-                    Value="{x:Bind ViewModel.ParallelStreams, Mode=TwoWay}" />
-            </Grid>
+						<NumberBox
+							Grid.Column="1"
+							Width="110"
+							Header="Port"
+							Maximum="65535"
+							Minimum="1"
+							SpinButtonPlacementMode="Compact"
+							Value="{x:Bind ViewModel.Port, Mode=TwoWay}" />
+					</Grid>
 
-            <CheckBox
-                Content="Reverse Mode (server sends)"
-                IsChecked="{x:Bind ViewModel.ReverseMode, Mode=TwoWay}" />
+					<Grid ColumnSpacing="12">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
 
-            <Button Command="{x:Bind ViewModel.RunBenchmarkCommand}">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <ProgressRing
-                        Width="16"
-                        Height="16"
-                        IsActive="{x:Bind ViewModel.IsRunning, Mode=OneWay}"
-                        Visibility="{x:Bind ViewModel.IsRunning, Mode=OneWay}" />
-                    <FontIcon
-                        FontSize="16"
-                        Glyph="&#xE768;" />
-                    <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" />
-                </StackPanel>
-            </Button>
-        </StackPanel>
+						<NumberBox
+							Grid.Column="0"
+							Header="Duration (seconds)"
+							Maximum="3600"
+							Minimum="1"
+							SpinButtonPlacementMode="Compact"
+							Value="{x:Bind ViewModel.DurationSeconds, Mode=TwoWay}" />
 
-        <!--  Current Throughput (live)  -->
-        <Border
-            Grid.Row="2"
-            Margin="0,16,0,0"
-            Padding="16"
-            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="1"
-            CornerRadius="8"
-            Visibility="{x:Bind ViewModel.HasLiveData, Mode=OneWay}">
-            <StackPanel Spacing="12">
-                <Grid>
-                    <TextBlock
-                        FontSize="16"
-                        FontWeight="SemiBold"
-                        Text="Current Throughput" />
-                    <CheckBox
-                        HorizontalAlignment="Right"
-                        Content="Show all intervals"
-                        IsChecked="{x:Bind ViewModel.ShowAllIntervals, Mode=TwoWay}" />
-                </Grid>
+						<NumberBox
+							Grid.Column="1"
+							Header="Parallel Streams"
+							Maximum="128"
+							Minimum="1"
+							SpinButtonPlacementMode="Compact"
+							Value="{x:Bind ViewModel.ParallelStreams, Mode=TwoWay}" />
+					</Grid>
 
-                <!--  Animated speedometer gauge  -->
-                <controls:SpeedometerGauge
-                    HorizontalAlignment="Center"
-                    Unit="Mbps"
-                    Value="{x:Bind ViewModel.CurrentThroughputMbps, Mode=OneWay}"
-                    Average="{x:Bind ViewModel.AverageThroughputMbps, Mode=OneWay}"
-                    Maximum="{x:Bind ViewModel.GaugeMaximumMbps, Mode=OneWay}" />
+					<CheckBox
+						Content="Reverse Mode (server sends)"
+						IsChecked="{x:Bind ViewModel.ReverseMode, Mode=TwoWay}" />
 
-                <!--  Gauge legend  -->
-                <StackPanel
-                    HorizontalAlignment="Center"
-                    Orientation="Horizontal"
-                    Spacing="16">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <Border
-                            Width="12"
-                            Height="12"
-                            VerticalAlignment="Center"
-                            Background="#76E054"
-                            CornerRadius="2" />
-                        <TextBlock
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Text="Current (needle)" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <Border
-                            Width="12"
-                            Height="12"
-                            VerticalAlignment="Center"
-                            Background="#FFD166"
-                            CornerRadius="2" />
-                        <TextBlock
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Text="Average (marker)" />
-                    </StackPanel>
-                </StackPanel>
+					<Button
+						Height="44"
+						HorizontalAlignment="Stretch"
+						Background="{StaticResource BrandAccentGradient}"
+						Command="{x:Bind ViewModel.RunBenchmarkCommand}"
+						CornerRadius="10">
+						<StackPanel
+							Orientation="Horizontal"
+							Spacing="8">
+							<ProgressRing
+								Width="18"
+								Height="18"
+								Foreground="White"
+								IsActive="{x:Bind ViewModel.IsRunning, Mode=OneWay}"
+								Visibility="{x:Bind ViewModel.IsRunning, Mode=OneWay}" />
+							<FontIcon
+								FontSize="16"
+								Foreground="White"
+								Glyph="&#xE768;" />
+							<TextBlock
+								FontWeight="SemiBold"
+								Foreground="White"
+								Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" />
+						</StackPanel>
+					</Button>
+				</StackPanel>
+			</Border>
 
-                <Grid ColumnSpacing="24">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+			<!--  ============ Live Throughput Card ============  -->
+			<Border Style="{StaticResource BrandCard}" Visibility="{x:Bind ViewModel.HasLiveData, Mode=OneWay}">
+				<StackPanel Spacing="16">
+					<Grid>
+						<TextBlock Style="{StaticResource BrandSubtitleText}" Text="Current Throughput" />
+						<CheckBox
+							HorizontalAlignment="Right"
+							Content="Show all intervals"
+							IsChecked="{x:Bind ViewModel.ShowAllIntervals, Mode=TwoWay}" />
+					</Grid>
 
-                    <StackPanel Grid.Column="0">
-                        <TextBlock
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Text="Current" />
-                        <TextBlock FontSize="28" FontWeight="SemiBold">
-                            <Run Text="{x:Bind ViewModel.CurrentThroughputGbpsText, Mode=OneWay}" />
-                            <Run Text="Gbps" />
-                        </TextBlock>
-                    </StackPanel>
+					<!--  Gauge + big animated readouts side by side  -->
+					<Grid ColumnSpacing="28">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="1">
-                        <TextBlock
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Text="Average" />
-                        <TextBlock FontSize="28" FontWeight="SemiBold">
-                            <Run Text="{x:Bind ViewModel.AverageThroughputGbpsText, Mode=OneWay}" />
-                            <Run Text="Gbps" />
-                        </TextBlock>
-                    </StackPanel>
-                </Grid>
+						<controls:SpeedometerGauge
+							Grid.Column="0"
+							VerticalAlignment="Center"
+							Unit="Mbps"
+							Average="{x:Bind ViewModel.AverageThroughputMbps, Mode=OneWay}"
+							Maximum="{x:Bind ViewModel.GaugeMaximumMbps, Mode=OneWay}"
+							Value="{x:Bind ViewModel.CurrentThroughputMbps, Mode=OneWay}" />
 
-                <ScrollViewer
-                    MaxHeight="160"
-                    VerticalScrollBarVisibility="Auto"
-                    VerticalScrollMode="Auto">
-                    <TextBlock
-                        FontFamily="Consolas"
-                        FontSize="13"
-                        IsTextSelectionEnabled="True"
-                        Text="{x:Bind ViewModel.LiveThroughputFeed, Mode=OneWay}" />
-                </ScrollViewer>
-            </StackPanel>
-        </Border>
+						<StackPanel
+							Grid.Column="1"
+							VerticalAlignment="Center"
+							Spacing="18">
+							<!--  Current  -->
+							<StackPanel Spacing="2">
+								<StackPanel Orientation="Horizontal" Spacing="8">
+									<Border
+										Width="12"
+										Height="12"
+										VerticalAlignment="Center"
+										Background="{StaticResource BrandGreenBrush}"
+										CornerRadius="3" />
+									<TextBlock Style="{StaticResource BrandCaptionText}" Text="CURRENT (NEEDLE)" />
+								</StackPanel>
+								<TextBlock
+									behaviors:NumberAnimator.Format="F3"
+									behaviors:NumberAnimator.Suffix=" Gbps"
+									behaviors:NumberAnimator.Value="{x:Bind ViewModel.CurrentThroughputGbps, Mode=OneWay}"
+									Foreground="{StaticResource BrandSpeedGradient}"
+									Style="{StaticResource BrandDisplayText}" />
+							</StackPanel>
 
-        <!--  Results  -->
-        <ScrollViewer Grid.Row="3" Margin="0,24,0,0">
-            <TextBlock
-                FontFamily="Consolas"
-                IsTextSelectionEnabled="True"
-                Text="{x:Bind ViewModel.ResultSummary, Mode=OneWay}" />
-        </ScrollViewer>
-    </Grid>
+							<!--  Average  -->
+							<StackPanel Spacing="2">
+								<StackPanel Orientation="Horizontal" Spacing="8">
+									<Border
+										Width="12"
+										Height="12"
+										VerticalAlignment="Center"
+										Background="{StaticResource BrandAmberBrush}"
+										CornerRadius="3" />
+									<TextBlock Style="{StaticResource BrandCaptionText}" Text="AVERAGE (MARKER)" />
+								</StackPanel>
+								<TextBlock
+									behaviors:NumberAnimator.Format="F3"
+									behaviors:NumberAnimator.Suffix=" Gbps"
+									behaviors:NumberAnimator.Value="{x:Bind ViewModel.AverageThroughputGbps, Mode=OneWay}"
+									Foreground="{ThemeResource TextFillColorPrimaryBrush}"
+									Style="{StaticResource BrandDisplayText}" />
+							</StackPanel>
+						</StackPanel>
+					</Grid>
+
+					<!--  Live interval feed  -->
+					<Border
+						Padding="12"
+						Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+						CornerRadius="8">
+						<ScrollViewer
+							MaxHeight="170"
+							VerticalScrollBarVisibility="Auto"
+							VerticalScrollMode="Auto">
+							<TextBlock
+								FontFamily="Cascadia Mono, Consolas"
+								FontSize="13"
+								IsTextSelectionEnabled="True"
+								Text="{x:Bind ViewModel.LiveThroughputFeed, Mode=OneWay}" />
+						</ScrollViewer>
+					</Border>
+				</StackPanel>
+			</Border>
+
+			<!--  ============ Results Card ============  -->
+			<Border Style="{StaticResource BrandCard}" Visibility="{x:Bind ViewModel.HasResult, Mode=OneWay}">
+				<StackPanel Spacing="12">
+					<TextBlock Style="{StaticResource BrandCaptionText}" Text="RESULTS" />
+					<TextBlock
+						FontFamily="Cascadia Mono, Consolas"
+						IsTextSelectionEnabled="True"
+						Text="{x:Bind ViewModel.ResultSummary, Mode=OneWay}" />
+				</StackPanel>
+			</Border>
+
+		</StackPanel>
+	</ScrollViewer>
 </Window>

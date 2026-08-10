@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.0] - Branded Visual Overhaul
+
+### Added
+- **Brand design system** (`src/FlowRate/Themes/Brand.xaml`): a centralized resource dictionary with an accent palette (blue/cyan/teal/green/amber/coral), signature gradient brushes (`BrandAccentGradient`, `BrandSpeedGradient`, `BrandCardGradient`), a typography scale (`BrandDisplayText`/`BrandTitleText`/`BrandSubtitleText`/`BrandCaptionText`), and reusable card styles (`BrandCard`, `BrandAccentCard`). Merged into `App.xaml` so every view can consume it.
+- **Animated numeric readouts** (`src/FlowRate/Behaviors/NumberAnimator.cs`): an attached-property helper that eases a `TextBlock` toward its target value, giving live throughput numbers a lively counting feel. Exposes `Value`, `Format`, and `Suffix` attached properties.
+
+### Changed
+- **Main window redesign** (`src/FlowRate/MainWindow.xaml`): rebuilt as a scrollable, centered layout of branded glass cards over the Mica backdrop, pairing the speedometer gauge with large animated Current/Average readouts and a results card that appears only when a summary is present.
+- Results-card visibility is now driven by a `MainViewModel.HasResult` boolean instead of a value converter, avoiding converter usage on the `Window` root.
+
+---
+
 ## [0.3.2] - Gauge Fix & Hardening Pass
 
 ### Fixed

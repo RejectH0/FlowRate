@@ -44,7 +44,11 @@ public partial class MainViewModel : ObservableObject
     public partial BenchmarkResult? LastResult { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasResult))]
     public partial string ResultSummary { get; set; } = string.Empty;
+
+    /// <summary>True when a result summary is present; drives the results card visibility.</summary>
+    public bool HasResult => !string.IsNullOrWhiteSpace(ResultSummary);
 
     // --- Real-time interval reporting (v0.2.0) ---
 
