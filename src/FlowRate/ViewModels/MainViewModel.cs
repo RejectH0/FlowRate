@@ -64,7 +64,13 @@ public partial class MainViewModel : ObservableObject
     /// Latest interval throughput in Gbps.
     /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CurrentThroughputGbpsText))]
     private double _currentThroughputGbps;
+
+    /// <summary>
+    /// Latest interval throughput in Gbps, formatted to three decimal places.
+    /// </summary>
+    public string CurrentThroughputGbpsText => CurrentThroughputGbps.ToString("F3");
 
     /// <summary>
     /// Latest interval throughput in Mbps.
@@ -76,7 +82,13 @@ public partial class MainViewModel : ObservableObject
     /// Running average throughput in Gbps across all intervals so far.
     /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(AverageThroughputGbpsText))]
     private double _averageThroughputGbps;
+
+    /// <summary>
+    /// Running average throughput in Gbps, formatted to three decimal places.
+    /// </summary>
+    public string AverageThroughputGbpsText => AverageThroughputGbps.ToString("F3");
 
     /// <summary>
     /// Running average throughput in Mbps across all intervals so far.
@@ -162,7 +174,8 @@ public partial class MainViewModel : ObservableObject
 
             if (ShowAllIntervals)
             {
-                _feedBuilder.AppendLine(line);
+                // Newest interval appears at the top of the feed.
+                _feedBuilder.Insert(0, line + Environment.NewLine);
                 LiveThroughputFeed = _feedBuilder.ToString();
             }
             else

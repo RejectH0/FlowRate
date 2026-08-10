@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.1] - Live Display Refinements
+
+### Fixed
+- **Throughput precision**: Current and Average Gbps now display with exactly three decimal places (`xx.yyy`) via new formatted `CurrentThroughputGbpsText` / `AverageThroughputGbpsText` view-model properties bound in `MainWindow.xaml`.
+- **Interval feed order**: The live interval feed beneath Current/Average now shows newest-first (each new interval is inserted at the top rather than appended to the bottom).
+
+---
+
 ## [0.2.0] - Live Interval Updates
 
 ### Real-Time Throughput Streaming

@@ -131,7 +131,7 @@
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Text="Current" />
                         <TextBlock FontSize="28" FontWeight="SemiBold">
-                            <Run Text="{x:Bind ViewModel.CurrentThroughputGbps, Mode=OneWay}" />
+                            <Run Text="{x:Bind ViewModel.CurrentThroughputGbpsText, Mode=OneWay}" />
                             <Run Text="Gbps" />
                         </TextBlock>
                     </StackPanel>
@@ -141,7 +141,7 @@
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Text="Average" />
                         <TextBlock FontSize="28" FontWeight="SemiBold">
-                            <Run Text="{x:Bind ViewModel.AverageThroughputGbps, Mode=OneWay}" />
+                            <Run Text="{x:Bind ViewModel.AverageThroughputGbpsText, Mode=OneWay}" />
                             <Run Text="Gbps" />
                         </TextBlock>
                     </StackPanel>
