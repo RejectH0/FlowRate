@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:FlowRate"
+    xmlns:controls="using:FlowRate.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:FlowRate.ViewModels"
     Title="FlowRate - Network Benchmark"
@@ -119,6 +120,43 @@
                         Content="Show all intervals"
                         IsChecked="{x:Bind ViewModel.ShowAllIntervals, Mode=TwoWay}" />
                 </Grid>
+
+                <!--  Animated speedometer gauge  -->
+                <controls:SpeedometerGauge
+                    HorizontalAlignment="Center"
+                    Unit="Mbps"
+                    Value="{x:Bind ViewModel.CurrentThroughputMbps, Mode=OneWay}"
+                    Average="{x:Bind ViewModel.AverageThroughputMbps, Mode=OneWay}"
+                    Maximum="{x:Bind ViewModel.GaugeMaximumMbps, Mode=OneWay}" />
+
+                <!--  Gauge legend  -->
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Border
+                            Width="12"
+                            Height="12"
+                            VerticalAlignment="Center"
+                            Background="#76E054"
+                            CornerRadius="2" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="Current (needle)" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Border
+                            Width="12"
+                            Height="12"
+                            VerticalAlignment="Center"
+                            Background="#FFD166"
+                            CornerRadius="2" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="Average (marker)" />
+                    </StackPanel>
+                </StackPanel>
 
                 <Grid ColumnSpacing="24">
                     <Grid.ColumnDefinitions>

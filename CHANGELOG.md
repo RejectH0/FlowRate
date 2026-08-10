@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.0] - Animated Speedometer Gauge
+
+### Added
+- **Custom-drawn speedometer gauge** (`src/FlowRate/Controls/SpeedometerGauge.xaml[.cs]`): a bespoke, speedtest.net-style radial dial rendered from geometry (no third-party control). Features a 270-degree sweep with tick marks, a colored track, and a progress arc.
+  - **Animated needle**: rotates to the current interval throughput with a 400ms CubicEase animation for smooth sweeps.
+  - **Speed-based color grading**: needle, progress arc, and value readout grade from blue (slow) through cyan/teal to lime-green (fast) based on `Value/Maximum`.
+  - **Average marker**: the running average is shown as a distinct amber radial marker, clearly delineated from the current-throughput needle. A color legend under the gauge labels both.
+  - **Dependency properties**: `Value`, `Average`, `Maximum`, `Unit`; the control redraws on resize.
+- **Auto-scaling dial**: `MainViewModel.GaugeMaximumMbps` tracks the observed peak and snaps up to the next "nice" ceiling (1/2/2.5/5 x 10^n) with ~25% headroom via `NiceCeiling()`. The scale only grows during a run (never shrinks) to avoid needle whiplash. Manual override deferred to a later revision.
+
+### Design Decisions
+- User has no design background and requested Copilot design the gauge; implemented as a reusable `UserControl` for future restyling.
+- Gauge scale uses Mbps for natural readability; the numeric readouts continue to show Gbps.
+
+### Workflow
+- Adopted default policy: commit and push immediately after a successful build with tests passing, before launching the app for the user to test.
+
+---
+
 ## [0.2.1] - Live Display Refinements
 
 ### Fixed

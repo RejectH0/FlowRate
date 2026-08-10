@@ -102,6 +102,15 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _hasLiveData;
 
+    /// <summary>
+    /// Auto-scaling full-scale maximum (Mbps) for the speedometer gauge.
+    /// Grows to the next "nice" ceiling above the observed peak; never shrinks mid-run.
+    /// </summary>
+    [ObservableProperty]
+    private double _gaugeMaximumMbps = 100;
+
+    private double _peakMbps;
+
     private readonly StringBuilder _feedBuilder = new();
 
     [RelayCommand(CanExecute = nameof(CanRunBenchmark))]
@@ -120,6 +129,8 @@ public partial class MainViewModel : ObservableObject
         AverageThroughputGbps = 0;
         AverageThroughputMbps = 0;
         HasLiveData = false;
+        _peakMbps = 0;
+        GaugeMaximumMbps = 100;
 
         try
         {
@@ -167,6 +178,16 @@ public partial class MainViewModel : ObservableObject
             AverageThroughputMbps = e.RunningAverageMbps;
             HasLiveData = true;
 
+            // Auto-scale the gauge to the observed peak, snapping to a nice ceiling.
+            var peakCandidate = Math.Max(agg.Mbps, e.RunningAverageMbps);
+            if (peakCandidate > _peakMbps)
+            {
+                _peakMbps = peakCandidate;
+                var ceiling = NiceCeiling(_peakMbps);
+                if (ceiling > GaugeMaximumMbps)
+                    GaugeMaximumMbps = ceiling;
+            }
+
             var line =
                 $"[{agg.StartSeconds,5:F1}-{agg.EndSeconds,5:F1}s]  " +
                 $"{agg.Gbps,6:F2} Gbps  ({agg.Mbps,8:F1} Mbps)   " +
@@ -188,6 +209,27 @@ public partial class MainViewModel : ObservableObject
     }
 
     private bool CanRunBenchmark() => !IsRunning;
+
+    /// <summary>
+    /// Snaps a peak throughput (Mbps) up to the next visually pleasant gauge ceiling,
+    /// keeping the needle comfortably below full-scale with ~25% headroom.
+    /// </summary>
+    private static double NiceCeiling(double peakMbps)
+    {
+        var target = Math.Max(peakMbps * 1.25, 10);
+        double[] baseSteps = { 1, 2, 2.5, 5 };
+        var magnitude = Math.Pow(10, Math.Floor(Math.Log10(target)));
+        foreach (var mult in new[] { 1.0, 10.0 })
+        {
+            foreach (var step in baseSteps)
+            {
+                var candidate = step * magnitude * mult;
+                if (candidate >= target)
+                    return candidate;
+            }
+        }
+        return magnitude * 100;
+    }
 
     private static string FormatSuccessResult(BenchmarkResult result)
     {
