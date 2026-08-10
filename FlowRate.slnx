@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FlowRate.Core/FlowRate.Core.csproj" />
+    <Project Path="src/FlowRate/FlowRate.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FlowRate.Core.Tests/FlowRate.Core.Tests.csproj" />
+  </Folder>
+</Solution>

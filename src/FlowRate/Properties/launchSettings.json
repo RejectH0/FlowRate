@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "FlowRate (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "FlowRate (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
