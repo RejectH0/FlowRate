@@ -15,6 +15,6 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
 
         ExtendsContentIntoTitleBar = true;
-        AppWindow.SetIcon("Assets/AppIcon.ico");
+        // AppWindow.SetIcon("Assets/AppIcon.ico"); // TODO: Fix asset deployment
     }
 }
