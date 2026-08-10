@@ -1,9 +1,21 @@
 using System.Diagnostics;
 using System.Text;
+using System.Text.Json;
 using FlowRate.Core.Domain;
 using FlowRate.Core.Iperf3;
+using FlowRate.Core.Iperf3.Transport;
 
 namespace FlowRate.Core.Services;
+
+/// <summary>
+/// Event args carrying a live interval snapshot during test execution.
+/// </summary>
+public sealed class IntervalProgressEventArgs : EventArgs
+{
+    public required IntervalSnapshot Snapshot { get; init; }
+    public required double RunningAverageGbps { get; init; }
+    public required double RunningAverageMbps { get; init; }
+}
 
 /// <summary>
 /// Service to execute iperf3 and parse results.
@@ -11,6 +23,12 @@ namespace FlowRate.Core.Services;
 public sealed class Iperf3Service
 {
     private readonly Iperf3Parser _parser = new();
+
+    /// <summary>
+    /// Raised on each interval as iperf3 streams live progress.
+    /// Handlers are invoked from a background thread; marshal to the UI thread as needed.
+    /// </summary>
+    public event EventHandler<IntervalProgressEventArgs>? IntervalProgress;
 
     /// <summary>
     /// Run an iperf3 benchmark test.
@@ -38,7 +56,7 @@ public sealed class Iperf3Service
         var args = BuildArguments(serverAddress, port, durationSeconds, reverse, parallelStreams);
 
         // Execute iperf3
-        var (exitCode, stdout, stderr) = await ExecuteIperf3Async(args, cancellationToken);
+        var (exitCode, stdout, stderr) = await ExecuteIperf3WithProgressAsync(args, cancellationToken);
 
         // If we got JSON output, try to parse it
         if (!string.IsNullOrWhiteSpace(stdout))
@@ -76,7 +94,9 @@ public sealed class Iperf3Service
         sb.Append($"-c {serverAddress} ");
         sb.Append($"-p {port} ");
         sb.Append($"-t {durationSeconds} ");
-        sb.Append("-J "); // JSON output
+        // --json-stream emits newline-delimited JSON events for live interval reporting
+        // (iperf 3.17+). We reassemble a standard result blob for the existing parser.
+        sb.Append("--json-stream ");
 
         if (reverse)
         {
@@ -91,7 +111,7 @@ public sealed class Iperf3Service
         return sb.ToString().Trim();
     }
 
-    private static async Task<(int exitCode, string stdout, string stderr)> ExecuteIperf3Async(
+    private async Task<(int exitCode, string stdout, string stderr)> ExecuteIperf3WithProgressAsync(
         string arguments,
         CancellationToken cancellationToken)
     {
@@ -107,14 +127,113 @@ public sealed class Iperf3Service
 
         using var process = new Process { StartInfo = startInfo };
 
-        var stdoutBuilder = new StringBuilder();
         var stderrBuilder = new StringBuilder();
+
+        // Streaming state
+        Iperf3Start? start = null;
+        Iperf3End? end = null;
+        string? errorMessage = null;
+        var intervals = new List<Iperf3Interval>();
+        var runningSumGbps = 0.0;
+        var runningSumMbps = 0.0;
+        var intervalCount = 0;
 
         process.OutputDataReceived += (_, e) =>
         {
-            if (e.Data != null)
+            var line = e.Data;
+            if (string.IsNullOrWhiteSpace(line))
             {
-                stdoutBuilder.AppendLine(e.Data);
+                return;
+            }
+
+            line = line.Trim();
+            if (line.Length == 0 || line[0] != '{')
+            {
+                return;
+            }
+
+            try
+            {
+                using var doc = JsonDocument.Parse(line);
+                var root = doc.RootElement;
+
+                if (!root.TryGetProperty("event", out var eventProp))
+                {
+                    return;
+                }
+
+                var eventName = eventProp.GetString();
+                if (!root.TryGetProperty("data", out var dataProp))
+                {
+                    return;
+                }
+
+                if (eventName == "error")
+                {
+                    errorMessage = dataProp.ValueKind == JsonValueKind.String
+                        ? dataProp.GetString()
+                        : dataProp.GetRawText();
+                    return;
+                }
+
+                var dataJson = dataProp.GetRawText();
+
+                switch (eventName)
+                {
+                    case "start":
+                        start = JsonSerializer.Deserialize<Iperf3Start>(dataJson);
+                        break;
+
+                    case "interval":
+                        var interval = JsonSerializer.Deserialize<Iperf3Interval>(dataJson);
+                        if (interval?.Sum != null)
+                        {
+                            intervals.Add(interval);
+                            intervalCount++;
+
+                            var snapshot = new IntervalSnapshot
+                            {
+                                IntervalNumber = intervalCount,
+                                Aggregate = new ThroughputMetrics
+                                {
+                                    StartSeconds = interval.Sum.Start,
+                                    EndSeconds = interval.Sum.End,
+                                    DurationSeconds = interval.Sum.Seconds,
+                                    Bytes = interval.Sum.Bytes,
+                                    BitsPerSecond = interval.Sum.BitsPerSecond
+                                },
+                                PerStreamMetrics = interval.Streams?
+                                    .Select(s => new ThroughputMetrics
+                                    {
+                                        StartSeconds = s.Start,
+                                        EndSeconds = s.End,
+                                        DurationSeconds = s.Seconds,
+                                        Bytes = s.Bytes,
+                                        BitsPerSecond = s.BitsPerSecond
+                                    })
+                                    .ToList()
+                            };
+
+                            runningSumGbps += snapshot.Aggregate.Gbps;
+                            runningSumMbps += snapshot.Aggregate.Mbps;
+
+                            IntervalProgress?.Invoke(this, new IntervalProgressEventArgs
+                            {
+                                Snapshot = snapshot,
+                                RunningAverageGbps = runningSumGbps / intervalCount,
+                                RunningAverageMbps = runningSumMbps / intervalCount
+                            });
+                        }
+                        break;
+
+                    case "end":
+                        end = JsonSerializer.Deserialize<Iperf3End>(dataJson);
+                        break;
+                }
+            }
+            catch
+            {
+                // Malformed or unexpected line; ignore and keep streaming.
             }
         };
 
@@ -132,6 +251,18 @@ public sealed class Iperf3Service
 
         await process.WaitForExitAsync(cancellationToken);
 
-        return (process.ExitCode, stdoutBuilder.ToString(), stderrBuilder.ToString());
+        // Reassemble a standard iperf3 result blob so the existing, tested parser
+        // handles the final mapping unchanged.
+        var assembled = new Iperf3Result
+        {
+            Start = start,
+            Intervals = intervals.Count > 0 ? intervals : null,
+            End = end,
+            Error = errorMessage
+        };
+
+        var reassembledJson = JsonSerializer.Serialize(assembled);
+
+        return (process.ExitCode, reassembledJson, stderrBuilder.ToString());
     }
 }

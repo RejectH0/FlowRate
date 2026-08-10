@@ -5,9 +5,25 @@ All notable changes to this project will be documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-**Version Format**: 0.x.yy during pre-release development
-- Major milestones: +0.1.0
-- Minor changes/fixes: +0.0.1
+---
+
+## [0.2.0] - Live Interval Updates
+
+### Real-Time Throughput Streaming
+
+**User Request**:
+> "Let's get those real time updates working... Let's see what a 'Current Throughput' display area which shows the throughput update appending lines as they come."
+> "Let's have a preference for either keeping all intervals visible as a scrolling list, or for showing just the most recent + running average. For now this can be a checkbox on the direct UI."
+
+**Discovery**:
+- Standard `iperf3 -J` buffers all output and only emits the full JSON blob at completion, so it cannot drive live interval updates.
+- Switched to `iperf3 --json-stream`, which emits newline-delimited JSON events (`start`, `interval`, `end`, `error`) as the test runs (iperf 3.17+).
+
+**Changes**:
+- `Iperf3Service`: rewrote execution to parse NDJSON events line-by-line, raise a new `IntervalProgress` event (`IntervalProgressEventArgs` with `IntervalSnapshot`, running average Gbps/Mbps), and reassemble a standard `Iperf3Result` blob at completion so the existing (tested) parser handles final mapping unchanged.
+- `MainViewModel`: subscribes to `IntervalProgress`, marshals updates onto the UI thread via `DispatcherQueue`, and exposes live state: `LiveThroughputFeed`, `CurrentThroughputGbps/Mbps`, `AverageThroughputGbps/Mbps`, `HasLiveData`, and `ShowAllIntervals` toggle.
+- `MainWindow.xaml`: added a "Current Throughput" card showing current + running-average throughput, a scrolling live interval feed, and a "Show all intervals" checkbox toggling between full scrolling history and most-recent + running-average.
+- Version bumped to `0.2.0`.
 
 ---
 

@@ -17,6 +17,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -97,8 +98,70 @@
             </Button>
         </StackPanel>
 
+        <!--  Current Throughput (live)  -->
+        <Border
+            Grid.Row="2"
+            Margin="0,16,0,0"
+            Padding="16"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8"
+            Visibility="{x:Bind ViewModel.HasLiveData, Mode=OneWay}">
+            <StackPanel Spacing="12">
+                <Grid>
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Text="Current Throughput" />
+                    <CheckBox
+                        HorizontalAlignment="Right"
+                        Content="Show all intervals"
+                        IsChecked="{x:Bind ViewModel.ShowAllIntervals, Mode=TwoWay}" />
+                </Grid>
+
+                <Grid ColumnSpacing="24">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="Current" />
+                        <TextBlock FontSize="28" FontWeight="SemiBold">
+                            <Run Text="{x:Bind ViewModel.CurrentThroughputGbps, Mode=OneWay}" />
+                            <Run Text="Gbps" />
+                        </TextBlock>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1">
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="Average" />
+                        <TextBlock FontSize="28" FontWeight="SemiBold">
+                            <Run Text="{x:Bind ViewModel.AverageThroughputGbps, Mode=OneWay}" />
+                            <Run Text="Gbps" />
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
+
+                <ScrollViewer
+                    MaxHeight="160"
+                    VerticalScrollBarVisibility="Auto"
+                    VerticalScrollMode="Auto">
+                    <TextBlock
+                        FontFamily="Consolas"
+                        FontSize="13"
+                        IsTextSelectionEnabled="True"
+                        Text="{x:Bind ViewModel.LiveThroughputFeed, Mode=OneWay}" />
+                </ScrollViewer>
+            </StackPanel>
+        </Border>
+
         <!--  Results  -->
-        <ScrollViewer Grid.Row="2" Margin="0,24,0,0">
+        <ScrollViewer Grid.Row="3" Margin="0,24,0,0">
             <TextBlock
                 FontFamily="Consolas"
                 IsTextSelectionEnabled="True"

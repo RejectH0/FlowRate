@@ -9,3 +9,4 @@ C:\Users\gsper\source\repos\FlowRate\src\FlowRate.Core\obj\Debug\net10.0\FlowRat
 C:\Users\gsper\source\repos\FlowRate\src\FlowRate.Core\obj\Debug\net10.0\refint\FlowRate.Core.dll
 C:\Users\gsper\source\repos\FlowRate\src\FlowRate.Core\obj\Debug\net10.0\FlowRate.Core.pdb
 C:\Users\gsper\source\repos\FlowRate\src\FlowRate.Core\obj\Debug\net10.0\ref\FlowRate.Core.dll
+C:\Users\gsper\source\repos\FlowRate\src\FlowRate.Core\obj\Debug\net10.0\FlowRate.Core.sourcelink.json

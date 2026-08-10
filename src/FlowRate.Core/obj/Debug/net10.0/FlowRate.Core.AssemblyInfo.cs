@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FlowRate.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+845bb144044687d9829f9c9f06361878737bc299")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+622ebce26bf3191391e9ff43d155bb41a95a7498")]
 [assembly: System.Reflection.AssemblyProductAttribute("FlowRate.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FlowRate.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

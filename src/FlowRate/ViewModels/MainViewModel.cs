@@ -1,13 +1,22 @@
+using System.Collections.ObjectModel;
+using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FlowRate.Core.Domain;
 using FlowRate.Core.Services;
+using Microsoft.UI.Dispatching;
 
 namespace FlowRate.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
     private readonly Iperf3Service _iperf3Service = new();
+    private readonly DispatcherQueue _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+
+    public MainViewModel()
+    {
+        _iperf3Service.IntervalProgress += OnIntervalProgress;
+    }
 
     [ObservableProperty]
     private string _serverAddress = "192.168.1.100";
@@ -36,6 +45,53 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string _resultSummary = string.Empty;
 
+    // --- Real-time interval reporting (v0.2.0) ---
+
+    /// <summary>
+    /// When true, every interval is kept in a scrolling live feed.
+    /// When false, only the most recent interval and running average are shown.
+    /// </summary>
+    [ObservableProperty]
+    private bool _showAllIntervals = true;
+
+    /// <summary>
+    /// Rolling text feed of live intervals shown in the "Current Throughput" area.
+    /// </summary>
+    [ObservableProperty]
+    private string _liveThroughputFeed = string.Empty;
+
+    /// <summary>
+    /// Latest interval throughput in Gbps.
+    /// </summary>
+    [ObservableProperty]
+    private double _currentThroughputGbps;
+
+    /// <summary>
+    /// Latest interval throughput in Mbps.
+    /// </summary>
+    [ObservableProperty]
+    private double _currentThroughputMbps;
+
+    /// <summary>
+    /// Running average throughput in Gbps across all intervals so far.
+    /// </summary>
+    [ObservableProperty]
+    private double _averageThroughputGbps;
+
+    /// <summary>
+    /// Running average throughput in Mbps across all intervals so far.
+    /// </summary>
+    [ObservableProperty]
+    private double _averageThroughputMbps;
+
+    /// <summary>
+    /// True once at least one live interval has arrived; used to reveal the live panel.
+    /// </summary>
+    [ObservableProperty]
+    private bool _hasLiveData;
+
+    private readonly StringBuilder _feedBuilder = new();
+
     [RelayCommand(CanExecute = nameof(CanRunBenchmark))]
     private async Task RunBenchmarkAsync()
     {
@@ -43,6 +99,15 @@ public partial class MainViewModel : ObservableObject
         StatusMessage = "Running benchmark...";
         ResultSummary = string.Empty;
         LastResult = null;
+
+        // Reset live state
+        _feedBuilder.Clear();
+        LiveThroughputFeed = string.Empty;
+        CurrentThroughputGbps = 0;
+        CurrentThroughputMbps = 0;
+        AverageThroughputGbps = 0;
+        AverageThroughputMbps = 0;
+        HasLiveData = false;
 
         try
         {
@@ -75,6 +140,38 @@ public partial class MainViewModel : ObservableObject
         {
             IsRunning = false;
         }
+    }
+
+    private void OnIntervalProgress(object? sender, IntervalProgressEventArgs e)
+    {
+        // Marshal from the iperf3 background thread onto the UI thread.
+        _dispatcherQueue.TryEnqueue(() =>
+        {
+            var agg = e.Snapshot.Aggregate;
+
+            CurrentThroughputGbps = agg.Gbps;
+            CurrentThroughputMbps = agg.Mbps;
+            AverageThroughputGbps = e.RunningAverageGbps;
+            AverageThroughputMbps = e.RunningAverageMbps;
+            HasLiveData = true;
+
+            var line =
+                $"[{agg.StartSeconds,5:F1}-{agg.EndSeconds,5:F1}s]  " +
+                $"{agg.Gbps,6:F2} Gbps  ({agg.Mbps,8:F1} Mbps)   " +
+                $"avg {e.RunningAverageGbps,6:F2} Gbps";
+
+            if (ShowAllIntervals)
+            {
+                _feedBuilder.AppendLine(line);
+                LiveThroughputFeed = _feedBuilder.ToString();
+            }
+            else
+            {
+                LiveThroughputFeed =
+                    $"Interval #{e.Snapshot.IntervalNumber}\n" +
+                    $"{line}";
+            }
+        });
     }
 
     private bool CanRunBenchmark() => !IsRunning;
