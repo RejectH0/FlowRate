@@ -37,6 +37,9 @@ public sealed partial class SpeedometerGauge : UserControl
     private double _centerY;
     private double _radius;
     private bool _needleInitialized;
+    // Exponentially-smoothed needle position (0..1) for fluid, trustworthy motion.
+    private double _smoothedFraction;
+    private const double NeedleSmoothing = 0.35;
 
     public SpeedometerGauge()
     {
@@ -359,21 +362,22 @@ public sealed partial class SpeedometerGauge : UserControl
             }
 
             // Average marker: rotate the rim triangle to the average angle.
-            _averageRotate.Angle = FractionToAngle(avgFraction) - StartAngle;
+            _averageRotate.Angle = FractionToAngle(avgFraction) - 270.0;
             _averageMarker.Visibility = Sanitize(Average) > 0.001 ? Visibility.Visible : Visibility.Collapsed;
 
-            // Needle: snap on first frame, animate thereafter.
-            var targetAngle = FractionToAngle(valueFraction);
+            // Needle: exponentially smooth the fraction, snap on first frame, animate thereafter.
             if (!_needleInitialized)
             {
-                _needleRotate.Angle = targetAngle;
+                _smoothedFraction = valueFraction;
+                _needleRotate.Angle = FractionToAngle(_smoothedFraction);
                 _needleInitialized = true;
             }
             else
             {
+                _smoothedFraction += (valueFraction - _smoothedFraction) * NeedleSmoothing;
                 var animation = new DoubleAnimation
                 {
-                    To = targetAngle,
+                    To = FractionToAngle(_smoothedFraction),
                     Duration = new Duration(TimeSpan.FromMilliseconds(950)),
                     EnableDependentAnimation = true,
                     EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },

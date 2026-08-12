@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+using FlowRate.Core.Diagnostics;
 using FlowRate.ViewModels;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -17,9 +20,35 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
 
         ExtendsContentIntoTitleBar = true;
-        // AppWindow.SetIcon("Assets/AppIcon.ico"); // TODO: Fix asset deployment
+        Title = "FlowRate";
 
+        ApplyWindowIcon();
         SizeAndCenter();
+    }
+
+    /// <summary>
+    /// Applies the bundled application icon to the window (title bar and taskbar).
+    /// Uses an absolute path resolved from the app base directory so it works
+    /// under packaged launch; a relative path previously caused a startup crash.
+    /// </summary>
+    private void ApplyWindowIcon()
+    {
+        try
+        {
+            var iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.ico");
+            if (File.Exists(iconPath))
+            {
+                AppWindow.SetIcon(iconPath);
+            }
+            else
+            {
+                Logger.Warn($"App icon not found at {iconPath}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Error("Failed to set window icon", ex);
+        }
     }
 
     /// <summary>

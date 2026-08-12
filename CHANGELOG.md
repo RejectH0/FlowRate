@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.2] - Gauge Marker Fix, Smoothing & Windows Icon
+
+### Fixed
+- **Average marker misplacement** (`src/FlowRate/Controls/SpeedometerGauge.xaml.cs`): the rim marker triangle was rotated using the wrong reference angle (subtracting the 135-degree start angle instead of the 270-degree geometry base), which placed the marker ~135 degrees off from its true value (e.g., a ~8000 Mbps reading appeared near the 18000 tick). The marker now sits at the correct position on the dial.
+- **Missing taskbar/title-bar icon** (`src/FlowRate/MainWindow.xaml.cs`): the window now applies the bundled `Assets/AppIcon.ico` via an absolute path resolved from the app base directory, so FlowRate shows a proper icon in the title bar and on the Windows taskbar. (The prior relative-path attempt had been disabled because it crashed at startup.)
+
+### Changed
+- **Exponential needle smoothing** (`src/FlowRate/Controls/SpeedometerGauge.xaml.cs`): the needle position is now passed through an exponential moving average (smoothing factor 0.35) before animating, layering additional fluidity on top of the average-tracking value for convincing, trustworthy motion.
+- **Manifest metadata** (`src/FlowRate/Package.appxmanifest`): gave the application a meaningful `Description` for a more complete, compliant Windows app presentation.
+
+---
+
 ## [0.4.1] - Responsive Window & Smoother Gauge
 
 ### Changed
