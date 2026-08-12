@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.3] - Custom FlowRate Icon
+
+### Added
+- **Custom brand icon set** (`src/FlowRate/tools/GenIcons.ps1`): a reproducible generator that renders the FlowRate mark â€” a teal-to-cyan rounded square with a white speedometer arc, tick marks, and an angled needle â€” at every required resolution. Replaces the default WinUI template placeholder art.
+
+### Changed
+- Regenerated all Windows tile and icon assets (`Square44x44`, `Square150x150`, `Wide310x150`, `StoreLogo`, `LockScreenLogo`, `SplashScreen`) plus a multi-resolution `AppIcon.ico` (16/24/32/48/64/128/256) so the title bar, taskbar, Start menu, and splash all use the branded icon.
+- Registered the added `scale-100` tile variants in the project so they deploy with the package.
+
+### Notes
+- Windows caches shell icons aggressively; if the taskbar still shows the old glyph after updating, it is a shell cache artifact (clearing the icon cache or re-pinning refreshes it).
+
+---
+
 ## [0.4.2] - Gauge Marker Fix, Smoothing & Windows Icon
 
 ### Fixed
