@@ -211,25 +211,53 @@ public partial class MainViewModel : ObservableObject
     /// </summary>
     private bool CanExportResult() => !IsRunning && LastResult is { IsSuccess: true };
 
-    [RelayCommand(CanExecute = nameof(CanExportResult))]
-    private void ExportJson() => ExportResult(ExportFormat.Json);
+    /// <summary>
+    /// Supplied by the view. Given a suggested file name and format, prompts the user for a
+    /// save location and returns the chosen full path, or <c>null</c> if the user cancelled.
+    /// </summary>
+    public Func<string, ExportFormat, Task<string?>>? SaveFilePickerAsync { get; set; }
 
     [RelayCommand(CanExecute = nameof(CanExportResult))]
-    private void ExportCsv() => ExportResult(ExportFormat.Csv);
+    private Task ExportJsonAsync() => ExportResultAsync(ExportFormat.Json);
 
-    private void ExportResult(ExportFormat format)
+    [RelayCommand(CanExecute = nameof(CanExportResult))]
+    private Task ExportCsvAsync() => ExportResultAsync(ExportFormat.Csv);
+
+    private async Task ExportResultAsync(ExportFormat format)
     {
         if (LastResult is not { IsSuccess: true } result)
             return;
 
         try
         {
-            var directory = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "FlowRate");
+            var suggestedName = BenchmarkResultExporter.BuildFileName(result, format);
 
-            var path = BenchmarkResultExporter.Export(result, directory, format);
-            StatusMessage = $"Exported to {Path.GetFileName(path)}";
+            string path;
+            if (SaveFilePickerAsync is { } picker)
+            {
+                var chosen = await picker(suggestedName, format);
+                if (string.IsNullOrEmpty(chosen))
+                {
+                    StatusMessage = "Export cancelled";
+                    return;
+                }
+
+                var content = format == ExportFormat.Json
+                    ? BenchmarkResultExporter.ToJson(result)
+                    : BenchmarkResultExporter.ToCsv(result);
+                await File.WriteAllTextAsync(chosen, content);
+                path = chosen;
+            }
+            else
+            {
+                var directory = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    "FlowRate");
+                path = BenchmarkResultExporter.Export(result, directory, format);
+            }
+
+            StatusMessage = $"Exported to {path}";
+            Logger.Info($"Exported {format} result to {path}");
         }
         catch (Exception ex)
         {

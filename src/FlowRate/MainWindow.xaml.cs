@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using FlowRate.Core.Diagnostics;
+using FlowRate.Core.Export;
 using FlowRate.ViewModels;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Graphics;
+using Windows.Storage.Pickers;
 
 namespace FlowRate;
 
@@ -23,9 +27,37 @@ public sealed partial class MainWindow : Window
         ExtendsContentIntoTitleBar = true;
         Title = "FlowRate";
 
+        ViewModel.SaveFilePickerAsync = PickExportPathAsync;
+
         ApplyWindowIcon();
         SizeAndCenter();
     }
+
+    /// <summary>
+    /// Shows a native Save As dialog for exporting a benchmark result, returning the chosen
+    /// path or <c>null</c> if the user cancelled. The picker is associated with this window's
+    /// HWND, which is required for file pickers in a WinUI desktop app.
+    /// </summary>
+    private async Task<string?> PickExportPathAsync(string suggestedName, ExportFormat format)
+    {
+        var picker = new FileSavePicker
+        {
+            SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+            SuggestedFileName = Path.GetFileNameWithoutExtension(suggestedName),
+        };
+
+        if (format == ExportFormat.Json)
+            picker.FileTypeChoices.Add("JSON file", new List<string> { ".json" });
+        else
+            picker.FileTypeChoices.Add("CSV file", new List<string> { ".csv" });
+
+        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+        WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+
+        var file = await picker.PickSaveFileAsync();
+        return file?.Path;
+    }
+
 
     /// <summary>
     /// Applies the bundled application icon to the window (title bar and taskbar).

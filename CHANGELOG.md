@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.5] - Interactive Export
+
+### Fixed
+- **Export buttons had no visible effect** (`src/FlowRate/ViewModels/MainViewModel.cs`, `src/FlowRate/MainWindow.xaml.cs`): the export commands previously wrote a timestamped file silently into `Documents\FlowRate` with no prompt, so clicking Export JSON / Export CSV appeared to do nothing. Both commands now open a native **Save As** dialog where the user chooses the location and file name, write the file there, and report the full saved path in the status line. The picker is initialized against the window HWND as required for WinUI desktop file pickers.
+
+---
+
 ## [0.4.4] - Export, Results Formatting & Preferences
 
 ### Added
