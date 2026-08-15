@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.0] - History, Chart, UDP, Profiles & UX
+
+### Added
+- **Persistent run history** (`src/FlowRate.Core/History/RunHistoryService.cs`, `HistoryEntry.cs`): every successful run is saved as full JSON under `%LOCALAPPDATA%\FlowRate\history\` with a capped (100-run) `index.json`. A Run History panel lists past runs; selecting one re-views its results and rebuilds its chart so it can be re-exported.
+- **Throughput-over-time chart** (`src/FlowRate/Controls/ThroughputChart.xaml`): a dependency-free, custom-drawn line/area chart plots per-interval Mbps live during a run and for any reviewed history entry, revealing ramp-up, dips, and jitter the gauge cannot show.
+- **UDP mode** (`src/FlowRate.Core/Services/Iperf3Service.cs`, transport/domain/parser): a TCP/UDP toggle runs iperf3 with `-u`; jitter and packet-loss are parsed (`Iperf3Stream`/`Iperf3End` UDP fields, `ThroughputMetrics`/`BenchmarkSummary.Udp`) and shown in a new "UDP Quality" section of the results.
+- **Preset profiles** (`src/FlowRate.Core/Settings/AppSettings.cs` `BenchmarkProfile`): named, savable configurations (server, port, duration, streams, reverse, UDP, bitrate, window) selectable from a dropdown, in addition to the existing global defaults.
+- **Bitrate and window options**: target bitrate (`-b`, in Mbps) and TCP window / socket buffer (`-w`, in KB) are exposed in the configuration card; blank/zero means the iperf3 default.
+- **Cancel / Stop button**: an in-progress benchmark can be stopped; the iperf3 child process tree is killed cleanly via a `CancellationToken`.
+- **Copy to clipboard**: a Copy button on the results card copies the formatted results text.
+- **Recent servers**: recently used server addresses are remembered (capped, de-duplicated) and selectable from a dropdown.
+
+### Changed
+- `Iperf3Service.RunBenchmarkAsync` now accepts protocol, target bitrate, window size, and a cancellation token.
+- `Iperf3Parser` maps UDP jitter/packet-loss and falls back to the UDP aggregate `sum` when `sum_sent`/`sum_received` are absent.
+
+### Notes
+- Delivered with reasonable defaults where interactive confirmation was unavailable: full-JSON history capped at 100 runs, a custom-drawn chart (no new dependencies), non-destructive profiles alongside the global default, and optional (blank = iperf3 default) bitrate/window fields.
+
+---
+
 ## [0.4.5] - Interactive Export
 
 ### Fixed

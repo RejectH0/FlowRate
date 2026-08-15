@@ -199,6 +199,42 @@ public class Iperf3ParserTests
         Assert.Equal(summary.Received.Mbps, summary.EffectiveMbps);
     }
 
+    [Fact]
+    public void Parse_UdpResult_MapsJitterAndPacketLoss()
+    {
+        // Arrange - a minimal iperf3 UDP result: the "end" section carries a single
+        // aggregate "sum" object with jitter and packet-loss instead of sum_sent/sum_received.
+        const string json = """
+            {
+              "start": {
+                "test_start": { "protocol": "UDP", "num_streams": 1, "duration": 10, "interval": 1 }
+              },
+              "end": {
+                "sum": {
+                  "start": 0, "end": 10, "seconds": 10,
+                  "bytes": 1250000, "bits_per_second": 1000000,
+                  "jitter_ms": 0.125, "lost_packets": 5, "packets": 1000, "lost_percent": 0.5
+                }
+              }
+            }
+            """;
+
+        // Act
+        var result = _parser.Parse(json);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Configuration);
+        Assert.Equal(TestProtocol.Udp, result.Configuration!.Protocol);
+
+        Assert.NotNull(result.Summary);
+        Assert.NotNull(result.Summary!.Udp);
+        Assert.Equal(0.125, result.Summary.Udp!.JitterMs);
+        Assert.Equal(5, result.Summary.Udp.LostPackets);
+        Assert.Equal(1000, result.Summary.Udp.Packets);
+        Assert.Equal(0.5, result.Summary.Udp.LostPercent);
+    }
+
     private static string LoadFixture(string filename)
     {
         var path = Path.Combine("Fixtures", filename);

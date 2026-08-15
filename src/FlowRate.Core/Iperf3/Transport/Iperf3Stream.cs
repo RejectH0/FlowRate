@@ -30,4 +30,18 @@ public sealed class Iperf3Stream
 
     [JsonPropertyName("sender")]
     public bool Sender { get; set; }
+
+    // --- UDP-only fields (present when the test protocol is UDP) ---
+
+    [JsonPropertyName("jitter_ms")]
+    public double? JitterMs { get; set; }
+
+    [JsonPropertyName("lost_packets")]
+    public long? LostPackets { get; set; }
+
+    [JsonPropertyName("packets")]
+    public long? Packets { get; set; }
+
+    [JsonPropertyName("lost_percent")]
+    public double? LostPercent { get; set; }
 }

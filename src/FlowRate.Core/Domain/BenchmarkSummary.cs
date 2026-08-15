@@ -12,6 +12,12 @@ public sealed class BenchmarkSummary
     public string? TcpCongestionAlgorithm { get; init; }
 
     /// <summary>
+    /// UDP aggregate jitter/packet-loss summary, when the test protocol is UDP.
+    /// Null for TCP tests.
+    /// </summary>
+    public ThroughputMetrics? Udp { get; init; }
+
+    /// <summary>
     /// The effective throughput (typically the receiver's measurement).
     /// </summary>
     public double EffectiveBitsPerSecond => Received.BitsPerSecond;

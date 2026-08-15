@@ -16,6 +16,13 @@ public sealed class Iperf3End
     [JsonPropertyName("sum_received")]
     public Iperf3Stream? SumReceived { get; set; }
 
+    /// <summary>
+    /// UDP tests report a single aggregate "sum" object (carrying jitter and packet-loss)
+    /// instead of the TCP sum_sent/sum_received pair.
+    /// </summary>
+    [JsonPropertyName("sum")]
+    public Iperf3Stream? Sum { get; set; }
+
     [JsonPropertyName("cpu_utilization_percent")]
     public Iperf3CpuUtilization? CpuUtilizationPercent { get; set; }
 

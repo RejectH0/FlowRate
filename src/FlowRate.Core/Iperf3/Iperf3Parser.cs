@@ -159,21 +159,33 @@ public sealed class Iperf3Parser
             EndSeconds = stream.End,
             DurationSeconds = stream.Seconds,
             Bytes = stream.Bytes,
-            BitsPerSecond = stream.BitsPerSecond
+            BitsPerSecond = stream.BitsPerSecond,
+            JitterMs = stream.JitterMs,
+            LostPackets = stream.LostPackets,
+            Packets = stream.Packets,
+            LostPercent = stream.LostPercent
         };
     }
 
     private static BenchmarkSummary? MapSummary(Iperf3End? end)
     {
-        if (end?.SumSent == null || end?.SumReceived == null)
+        if (end == null)
+            return null;
+
+        // UDP tests report a single aggregate "sum" (with jitter/loss) rather than
+        // the TCP sum_sent/sum_received pair. Fall back to it for both directions.
+        var sent = end.SumSent ?? end.Sum;
+        var received = end.SumReceived ?? end.Sum;
+        if (sent == null || received == null)
             return null;
 
         return new BenchmarkSummary
         {
-            Sent = MapThroughput(end.SumSent),
-            Received = MapThroughput(end.SumReceived),
+            Sent = MapThroughput(sent),
+            Received = MapThroughput(received),
             CpuUtilization = MapCpuUtilization(end.CpuUtilizationPercent),
-            TcpCongestionAlgorithm = end.ReceiverTcpCongestion
+            TcpCongestionAlgorithm = end.ReceiverTcpCongestion,
+            Udp = end.Sum is { } udpSum ? MapThroughput(udpSum) : null
         };
     }
 

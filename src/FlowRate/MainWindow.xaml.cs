@@ -28,9 +28,18 @@ public sealed partial class MainWindow : Window
         Title = "FlowRate";
 
         ViewModel.SaveFilePickerAsync = PickExportPathAsync;
+        ViewModel.CopyToClipboard = CopyTextToClipboard;
 
         ApplyWindowIcon();
         SizeAndCenter();
+    }
+
+    /// <summary>Copies text to the system clipboard.</summary>
+    private static void CopyTextToClipboard(string text)
+    {
+        var package = new Windows.ApplicationModel.DataTransfer.DataPackage();
+        package.SetText(text ?? string.Empty);
+        Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(package);
     }
 
     /// <summary>

@@ -45,6 +45,9 @@ public sealed class Iperf3Service
         int durationSeconds = 10,
         bool reverse = false,
         int parallelStreams = 1,
+        bool udp = false,
+        long? targetBitrateBitsPerSecond = null,
+        int? windowSizeBytes = null,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(serverAddress))
@@ -53,7 +56,9 @@ public sealed class Iperf3Service
         }
 
         // Build iperf3 command arguments
-        var args = BuildArguments(serverAddress, port, durationSeconds, reverse, parallelStreams);
+        var args = BuildArguments(
+            serverAddress, port, durationSeconds, reverse, parallelStreams,
+            udp, targetBitrateBitsPerSecond, windowSizeBytes);
 
         // Execute iperf3
         var (exitCode, stdout, stderr) = await ExecuteIperf3WithProgressAsync(args, cancellationToken);
@@ -88,7 +93,10 @@ public sealed class Iperf3Service
         int port,
         int durationSeconds,
         bool reverse,
-        int parallelStreams)
+        int parallelStreams,
+        bool udp,
+        long? targetBitrateBitsPerSecond,
+        int? windowSizeBytes)
     {
         var sb = new StringBuilder();
         sb.Append($"-c {serverAddress} ");
@@ -98,6 +106,11 @@ public sealed class Iperf3Service
         // (iperf 3.17+). We reassemble a standard result blob for the existing parser.
         sb.Append("--json-stream ");
 
+        if (udp)
+        {
+            sb.Append("-u ");
+        }
+
         if (reverse)
         {
             sb.Append("-R ");
@@ -106,6 +119,17 @@ public sealed class Iperf3Service
         if (parallelStreams > 1)
         {
             sb.Append($"-P {parallelStreams} ");
+        }
+
+        if (targetBitrateBitsPerSecond is > 0)
+        {
+            // -b takes bits/sec; 0 means unlimited (TCP default), so only emit when set.
+            sb.Append($"-b {targetBitrateBitsPerSecond.Value} ");
+        }
+
+        if (windowSizeBytes is > 0)
+        {
+            sb.Append($"-w {windowSizeBytes.Value} ");
         }
 
         return sb.ToString().Trim();
@@ -249,7 +273,17 @@ public sealed class Iperf3Service
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
 
-        await process.WaitForExitAsync(cancellationToken);
+        try
+        {
+            await process.WaitForExitAsync(cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            // User requested a stop: kill the iperf3 process (and its tree) so it does not
+            // linger as an orphan, then rethrow so the caller can surface a cancelled state.
+            TryKill(process);
+            throw;
+        }
 
         // Reassemble a standard iperf3 result blob so the existing, tested parser
         // handles the final mapping unchanged.
@@ -264,5 +298,18 @@ public sealed class Iperf3Service
         var reassembledJson = JsonSerializer.Serialize(assembled);
 
         return (process.ExitCode, reassembledJson, stderrBuilder.ToString());
+    }
+
+    private static void TryKill(System.Diagnostics.Process process)
+    {
+        try
+        {
+            if (!process.HasExited)
+                process.Kill(entireProcessTree: true);
+        }
+        catch
+        {
+            // Best-effort cleanup; ignore failures.
+        }
     }
 }

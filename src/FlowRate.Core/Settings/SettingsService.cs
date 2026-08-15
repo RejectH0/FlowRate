@@ -62,4 +62,25 @@ public static class SettingsService
             Logger.Error("Failed to save settings.", ex);
         }
     }
+
+    /// <summary>Maximum number of recent server addresses retained.</summary>
+    public const int MaxRecentServers = 8;
+
+    /// <summary>
+    /// Records a server address at the top of the recent list (de-duplicated, capped),
+    /// mutating the supplied settings in place.
+    /// </summary>
+    public static void AddRecentServer(AppSettings settings, string server)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+        if (string.IsNullOrWhiteSpace(server))
+            return;
+
+        settings.RecentServers.RemoveAll(s =>
+            string.Equals(s, server, StringComparison.OrdinalIgnoreCase));
+        settings.RecentServers.Insert(0, server);
+
+        while (settings.RecentServers.Count > MaxRecentServers)
+            settings.RecentServers.RemoveAt(settings.RecentServers.Count - 1);
+    }
 }

@@ -12,6 +12,20 @@ public sealed class ThroughputMetrics
     public required long Bytes { get; init; }
     public required double BitsPerSecond { get; init; }
 
+    // --- UDP-only metrics (null for TCP tests) ---
+
+    /// <summary>Jitter in milliseconds (UDP only).</summary>
+    public double? JitterMs { get; init; }
+
+    /// <summary>Number of lost packets (UDP only).</summary>
+    public long? LostPackets { get; init; }
+
+    /// <summary>Total packets sent/received in this interval or summary (UDP only).</summary>
+    public long? Packets { get; init; }
+
+    /// <summary>Packet loss as a percentage (UDP only).</summary>
+    public double? LostPercent { get; init; }
+
     /// <summary>
     /// Convenience property: throughput in megabits per second.
     /// </summary>
