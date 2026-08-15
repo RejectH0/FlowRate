@@ -4,6 +4,7 @@ using FlowRate.Core.Diagnostics;
 using FlowRate.ViewModels;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Windows.Graphics;
 
 namespace FlowRate;
@@ -68,6 +69,29 @@ public sealed partial class MainWindow : Window
             var x = area.WorkArea.X + (area.WorkArea.Width - width) / 2;
             var y = area.WorkArea.Y + (area.WorkArea.Height - height) / 2;
             AppWindow.Move(new PointInt32(x, y));
+        }
+    }
+
+    /// <summary>
+    /// Opens the preferences dialog. Saving persists the current configuration as
+    /// the defaults used for future sessions.
+    /// </summary>
+    private async void OnSettingsClick(object sender, RoutedEventArgs e)
+    {
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Content.XamlRoot,
+            Title = "Preferences",
+            Content = new SettingsDialogContent(ViewModel),
+            PrimaryButtonText = "Save as defaults",
+            CloseButtonText = "Close",
+            DefaultButton = ContentDialogButton.Primary,
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            ViewModel.SaveSettingsCommand.Execute(null);
         }
     }
 }

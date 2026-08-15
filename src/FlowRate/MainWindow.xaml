@@ -23,6 +23,7 @@
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="Auto" />
 					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
 				</Grid.ColumnDefinitions>
 
 				<!--  Accent glyph badge  -->
@@ -46,6 +47,17 @@
 						Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 						Text="Network Benchmark Tool powered by iperf3" />
 				</StackPanel>
+
+				<Button
+					Grid.Column="2"
+					Width="44"
+					Height="44"
+					VerticalAlignment="Center"
+					Click="OnSettingsClick"
+					CornerRadius="10"
+					ToolTipService.ToolTip="Preferences">
+					<FontIcon FontSize="18" Glyph="&#xE713;" />
+				</Button>
 			</Grid>
 
 			<!--  ============ Configuration Card ============  -->
@@ -222,7 +234,29 @@
 			<!--  ============ Results Card ============  -->
 			<Border Style="{StaticResource BrandCard}" Visibility="{x:Bind ViewModel.HasResult, Mode=OneWay}">
 				<StackPanel Spacing="12">
-					<TextBlock Style="{StaticResource BrandCaptionText}" Text="RESULTS" />
+					<Grid>
+						<TextBlock
+							VerticalAlignment="Center"
+							Style="{StaticResource BrandCaptionText}"
+							Text="RESULTS" />
+						<StackPanel
+							HorizontalAlignment="Right"
+							Orientation="Horizontal"
+							Spacing="8">
+							<Button Command="{x:Bind ViewModel.ExportJsonCommand}">
+								<StackPanel Orientation="Horizontal" Spacing="6">
+									<FontIcon FontSize="14" Glyph="&#xE896;" />
+									<TextBlock Text="Export JSON" />
+								</StackPanel>
+							</Button>
+							<Button Command="{x:Bind ViewModel.ExportCsvCommand}">
+								<StackPanel Orientation="Horizontal" Spacing="6">
+									<FontIcon FontSize="14" Glyph="&#xE896;" />
+									<TextBlock Text="Export CSV" />
+								</StackPanel>
+							</Button>
+						</StackPanel>
+					</Grid>
 					<TextBlock
 						FontFamily="Cascadia Mono, Consolas"
 						IsTextSelectionEnabled="True"

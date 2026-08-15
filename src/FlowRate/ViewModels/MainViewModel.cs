@@ -1,10 +1,12 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FlowRate.Core.Domain;
+using FlowRate.Core.Export;
 using FlowRate.Core.Services;
 using FlowRate.Core.Diagnostics;
+using FlowRate.Core.Settings;
 using Microsoft.UI.Dispatching;
 
 namespace FlowRate.ViewModels;
@@ -17,6 +19,36 @@ public partial class MainViewModel : ObservableObject
     public MainViewModel()
     {
         _iperf3Service.IntervalProgress += OnIntervalProgress;
+        LoadSettings();
+    }
+
+    private void LoadSettings()
+    {
+        var settings = SettingsService.Load();
+        ServerAddress = settings.ServerAddress;
+        Port = settings.Port;
+        DurationSeconds = settings.DurationSeconds;
+        ParallelStreams = settings.ParallelStreams;
+        ReverseMode = settings.ReverseMode;
+        ShowAllIntervals = settings.ShowAllIntervals;
+    }
+
+    /// <summary>
+    /// Persists the current configuration as the default preferences for future sessions.
+    /// </summary>
+    [RelayCommand]
+    private void SaveSettings()
+    {
+        SettingsService.Save(new AppSettings
+        {
+            ServerAddress = ServerAddress,
+            Port = Port,
+            DurationSeconds = DurationSeconds,
+            ParallelStreams = ParallelStreams,
+            ReverseMode = ReverseMode,
+            ShowAllIntervals = ShowAllIntervals,
+        });
+        StatusMessage = "Preferences saved";
     }
 
     [ObservableProperty]
@@ -35,12 +67,16 @@ public partial class MainViewModel : ObservableObject
     public partial int ParallelStreams { get; set; } = 1;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ExportJsonCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ExportCsvCommand))]
     public partial bool IsRunning { get; set; } = false;
 
     [ObservableProperty]
     public partial string StatusMessage { get; set; } = "Ready";
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ExportJsonCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ExportCsvCommand))]
     public partial BenchmarkResult? LastResult { get; set; }
 
     [ObservableProperty]
@@ -170,6 +206,38 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// True when a successful result is available to export and no benchmark is running.
+    /// </summary>
+    private bool CanExportResult() => !IsRunning && LastResult is { IsSuccess: true };
+
+    [RelayCommand(CanExecute = nameof(CanExportResult))]
+    private void ExportJson() => ExportResult(ExportFormat.Json);
+
+    [RelayCommand(CanExecute = nameof(CanExportResult))]
+    private void ExportCsv() => ExportResult(ExportFormat.Csv);
+
+    private void ExportResult(ExportFormat format)
+    {
+        if (LastResult is not { IsSuccess: true } result)
+            return;
+
+        try
+        {
+            var directory = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "FlowRate");
+
+            var path = BenchmarkResultExporter.Export(result, directory, format);
+            StatusMessage = $"Exported to {Path.GetFileName(path)}";
+        }
+        catch (Exception ex)
+        {
+            Logger.Error("Export failed", ex);
+            StatusMessage = $"Export failed: {ex.Message}";
+        }
+    }
+
     private void OnIntervalProgress(object? sender, IntervalProgressEventArgs e)
     {
         // Marshal from the iperf3 background thread onto the UI thread.
@@ -252,9 +320,9 @@ public partial class MainViewModel : ObservableObject
         var config = result.Configuration;
 
         return $"""
-            â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            ===========================================
             FlowRate Benchmark Results
-            â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            ===========================================
 
             Server:       {result.Connection?.RemoteHost ?? "Unknown"}:{result.Connection?.RemotePort ?? 0}
             Client:       {result.Connection?.LocalHost ?? "Unknown"}:{result.Connection?.LocalPort ?? 0}
@@ -264,25 +332,25 @@ public partial class MainViewModel : ObservableObject
             Streams:      {config?.StreamCount}
             Duration:     {config?.DurationSeconds}s
 
-            â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            -------------------------------------------
             Throughput
-            â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            -------------------------------------------
 
             Sent:         {summary.Sent.Gbps:F2} Gbps  ({summary.Sent.GigaBytes:F2} GB)
             Received:     {summary.Received.Gbps:F2} Gbps  ({summary.Received.GigaBytes:F2} GB)
 
             Effective:    {summary.EffectiveGbps:F2} Gbps ({summary.EffectiveMbps:F0} Mbps)
 
-            â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            -------------------------------------------
             CPU Utilization
-            â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            -------------------------------------------
 
             Local:        {summary.CpuUtilization?.LocalTotal:F1}%  (User: {summary.CpuUtilization?.LocalUser:F1}%, System: {summary.CpuUtilization?.LocalSystem:F1}%)
             Remote:       {summary.CpuUtilization?.RemoteTotal:F1}%  (User: {summary.CpuUtilization?.RemoteUser:F1}%, System: {summary.CpuUtilization?.RemoteSystem:F1}%)
 
             TCP Algorithm: {summary.TcpCongestionAlgorithm ?? "N/A"}
 
-            â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            ===========================================
             """;
     }
 }

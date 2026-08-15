@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.4] - Export, Results Formatting & Preferences
+
+### Added
+- **Persistent preferences** (`src/FlowRate.Core/Settings/AppSettings.cs`, `SettingsService.cs`): server address, port, duration, parallel streams, reverse mode, and the show-all-intervals option are now stored as JSON in `%LOCALAPPDATA%\FlowRate\settings.json` and restored on every launch.
+- **Preferences dialog** (`src/FlowRate/SettingsDialogContent.xaml`): a gear button in the header opens a dialog where the current configuration can be saved as the defaults for future sessions, so common values like the iperf3 server address no longer need to be re-typed each run.
+
+### Fixed
+- **Export buttons stayed disabled** (`src/FlowRate/ViewModels/MainViewModel.cs`): `ExportJsonCommand` and `ExportCsvCommand` now re-evaluate when `IsRunning` changes, so the Export JSON / Export CSV buttons enable correctly once a benchmark finishes.
+- **Garbled results dividers** (`src/FlowRate/ViewModels/MainViewModel.cs`): the results summary previously rendered double-encoded box-drawing characters (e.g., `â•`, `â”€`). The divider rules are now portable ASCII (`=` and `-`) that render cleanly.
+
+---
+
 ## [0.4.3] - Custom FlowRate Icon
 
 ### Added

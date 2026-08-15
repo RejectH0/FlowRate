@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="FlowRate.SettingsDialogContent"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:FlowRate.ViewModels"
+    mc:Ignorable="d">
+
+    <StackPanel MinWidth="360" Spacing="14">
+        <TextBlock
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            Text="These values are pre-filled each time FlowRate starts."
+            TextWrapping="Wrap" />
+
+        <Grid ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox
+                Grid.Column="0"
+                Header="Server Address"
+                PlaceholderText="e.g., 192.168.1.100 or server.local"
+                Text="{x:Bind ViewModel.ServerAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+            <NumberBox
+                Grid.Column="1"
+                Width="110"
+                Header="Port"
+                Maximum="65535"
+                Minimum="1"
+                SpinButtonPlacementMode="Compact"
+                Value="{x:Bind ViewModel.Port, Mode=TwoWay}" />
+        </Grid>
+
+        <Grid ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <NumberBox
+                Grid.Column="0"
+                Header="Duration (seconds)"
+                Maximum="3600"
+                Minimum="1"
+                SpinButtonPlacementMode="Compact"
+                Value="{x:Bind ViewModel.DurationSeconds, Mode=TwoWay}" />
+
+            <NumberBox
+                Grid.Column="1"
+                Header="Parallel Streams"
+                Maximum="128"
+                Minimum="1"
+                SpinButtonPlacementMode="Compact"
+                Value="{x:Bind ViewModel.ParallelStreams, Mode=TwoWay}" />
+        </Grid>
+
+        <CheckBox
+            Content="Reverse Mode (server sends)"
+            IsChecked="{x:Bind ViewModel.ReverseMode, Mode=TwoWay}" />
+
+        <CheckBox
+            Content="Show all intervals in live feed"
+            IsChecked="{x:Bind ViewModel.ShowAllIntervals, Mode=TwoWay}" />
+    </StackPanel>
+</UserControl>

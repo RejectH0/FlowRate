@@ -1,7 +1,15 @@
 <Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+    <Platform Name="ARM64" />
+    <Platform Name="Any CPU" />
+  </Configurations>
   <Folder Name="/src/">
     <Project Path="src/FlowRate.Core/FlowRate.Core.csproj" />
-    <Project Path="src/FlowRate/FlowRate.csproj" />
+    <Project Path="src/FlowRate/FlowRate.csproj">
+      <Platform Solution="Any CPU" Project="x64" />
+    </Project>
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/FlowRate.Core.Tests/FlowRate.Core.Tests.csproj" />
