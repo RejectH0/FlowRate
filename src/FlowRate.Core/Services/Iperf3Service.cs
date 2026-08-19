@@ -148,7 +148,9 @@ public sealed class Iperf3Service
     {
         var startInfo = new ProcessStartInfo
         {
-            FileName = "iperf3",
+            // Prefer the resolved absolute path (bundled copy or PATH); fall back to
+            // the bare name so behavior is unchanged if resolution races/fails.
+            FileName = Iperf3Locator.FindExecutable() ?? "iperf3",
             Arguments = arguments,
             RedirectStandardOutput = true,
             RedirectStandardError = true,

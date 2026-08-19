@@ -10,8 +10,8 @@
 
   <Identity
     Name="RejectH0.FlowRate"
-    Publisher="CN=RejectH0"
-    Version="0.6.0.0" />
+    Publisher="CN=flowrate.tech"
+    Version="0.7.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="D442A4DB-FE60-470E-9A72-D08523FE55C3" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -50,4 +50,5 @@
     <rescap:Capability Name="runFullTrust" />
   </Capabilities>
 </Package>
+
 

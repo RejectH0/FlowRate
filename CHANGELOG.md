@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.0] - UI Fixes, iperf3 Detection, Info Dialog & Update Checks
+
+### Fixed
+- **Title bar covering content** (`src/FlowRate/MainWindow.xaml`(+`.cs`)): `ExtendsContentIntoTitleBar` was enabled without a registered drag region, so the caption area overlaid the header. Added a dedicated 36px `AppTitleBar` row (app icon + caption text) registered via `SetTitleBar`; content now starts below it.
+- **Default taskbar/Start icon** (`src/FlowRate/FlowRate.csproj`): the exe carried no embedded icon, so the shell fell back to the default glyph in unpackaged builds. Added `<ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>`.
+
+### Added
+- **iperf3 startup detection** (`src/FlowRate.Core/Services/Iperf3Locator.cs`, `src/FlowRate/App.xaml.cs`): FlowRate now resolves iperf3.exe (app folder first, then PATH) at launch. If missing, a dialog directs the user to the official Windows builds (https://github.com/ar51an/iperf3-win-builds) with an Open Download Page button, then exits.
+- **Information dialog** (`src/FlowRate/MainWindow.xaml`(+`.cs`)): new (i) button left of the Settings gear shows the detected iperf3 executable path and version, the FlowRate version, and a "Check for updates" action.
+- **Update checks via GitHub** (`src/FlowRate.Core/Services/UpdateService.cs`): queries the GitHub releases/latest API for both `RejectH0/FlowRate` and `ar51an/iperf3-win-builds`, compares versions, and opens the release page when an update is available. Full silent self-update deferred until signing/hosting (flowrate.tech) is finalized.
+- **Resolved iperf3 path in benchmarks** (`src/FlowRate.Core/Services/Iperf3Service.cs`): the service now launches the located absolute iperf3 path (bundled copy wins over PATH).
+
+### Changed
+- **Package publisher identity** (`src/FlowRate/Package.appxmanifest`): `Publisher` changed from `CN=RejectH0` to `CN=flowrate.tech` (matching the newly registered project domain); manifest version 0.7.0.0.
+- **README acknowledgements**: proper sourced credits for iperf3 (ESnet / Lawrence Berkeley National Laboratory, BSD-3) and the Windows builds maintainer (ar51an), with hyperlinks.
+- **Iteration workflow**: every iteration now ends with `git add/commit/push` — pending 0.5.1–0.6.0 work was pushed to GitHub at the start of this iteration.
+
+---
+
 ## [0.6.0] - MSIX Packaging & Standalone Deployment
 
 ### Added

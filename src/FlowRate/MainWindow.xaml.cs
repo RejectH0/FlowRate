@@ -25,6 +25,7 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
 
         ExtendsContentIntoTitleBar = true;
+        SetTitleBar(AppTitleBar);
         Title = "FlowRate";
 
         ViewModel.SaveFilePickerAsync = PickExportPathAsync;
@@ -111,6 +112,53 @@ public sealed partial class MainWindow : Window
             var y = area.WorkArea.Y + (area.WorkArea.Height - height) / 2;
             AppWindow.Move(new PointInt32(x, y));
         }
+    }
+
+    /// <summary>
+    /// Opens the Information dialog: iperf3 detection details (path + version),
+    /// FlowRate version, and on-demand update checks for both against GitHub.
+    /// </summary>
+    private async void OnInfoClick(object sender, RoutedEventArgs e)
+    {
+        var iperf3Path = FlowRate.Core.Services.Iperf3Locator.FindExecutable();
+        var iperf3Version = await FlowRate.Core.Services.Iperf3Locator.GetVersionAsync(iperf3Path);
+        var appVersion = typeof(MainWindow).Assembly.GetName().Version ?? new Version(0, 0, 0);
+
+        var panel = new StackPanel { Spacing = 8, MinWidth = 420 };
+        panel.Children.Add(new TextBlock { Text = "iperf3 Detection", FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
+        panel.Children.Add(new TextBlock { Text = $"Executable: {iperf3Path ?? "Not found"}", TextWrapping = TextWrapping.Wrap, IsTextSelectionEnabled = true });
+        panel.Children.Add(new TextBlock { Text = $"Version: {iperf3Version ?? "Unknown"}", IsTextSelectionEnabled = true });
+        panel.Children.Add(new TextBlock { Text = "FlowRate", FontWeight = Microsoft.UI.Text.FontWeights.SemiBold, Margin = new Thickness(0, 8, 0, 0) });
+        panel.Children.Add(new TextBlock { Text = $"Version: {appVersion.ToString(3)}", IsTextSelectionEnabled = true });
+
+        var updateStatus = new TextBlock { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 0) };
+        var checkButton = new Button { Content = "Check for updates", Margin = new Thickness(0, 8, 0, 0) };
+        checkButton.Click += async (_, _) =>
+        {
+            checkButton.IsEnabled = false;
+            updateStatus.Text = "Checking GitHub for updates...";
+            var updates = new FlowRate.Core.Services.UpdateService();
+            var flowRate = await updates.CheckFlowRateAsync(appVersion);
+            var iperf3 = await updates.CheckIperf3Async(iperf3Version);
+            updateStatus.Text = $"FlowRate: {flowRate.Message}\niperf3: {iperf3.Message}";
+            if (flowRate.IsUpdateAvailable && flowRate.ReleaseUrl is not null)
+                _ = await Windows.System.Launcher.LaunchUriAsync(new Uri(flowRate.ReleaseUrl));
+            if (iperf3.IsUpdateAvailable && iperf3.ReleaseUrl is not null)
+                _ = await Windows.System.Launcher.LaunchUriAsync(new Uri(iperf3.ReleaseUrl));
+            checkButton.IsEnabled = true;
+        };
+        panel.Children.Add(checkButton);
+        panel.Children.Add(updateStatus);
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Content.XamlRoot,
+            Title = "Information",
+            Content = panel,
+            CloseButtonText = "Close",
+        };
+
+        await dialog.ShowAsync();
     }
 
     /// <summary>

@@ -48,6 +48,14 @@ Layered, one-way dependencies (UI → Services → Domain ← Transport):
 - **Standalone (unpackaged)**: `dotnet publish src/FlowRate/FlowRate.csproj -c Release -p:PublishProfile=win-x64-unpackaged` → self-contained folder at `bin\Release\...\win-x64\publish-unpackaged\` (~267 MB). Uses `WindowsPackageType=None` + `WindowsAppSDKSelfContained=true`; no `dotnet run` identity registration needed. **Trimming stays disabled** in this profile — WinUI 3 XAML reflection breaks under trimming.
 - **Launch profiles**: `FlowRate (Package)` runs with MSIX identity; `FlowRate (Unpackaged)` runs unpackaged via debug identity.
 
+## Iteration Workflow
+Every iteration ends with: build + full test run, meaningful updates to all four docs
+(README, CHANGELOG, TODO, DEVELOPMENT), then `git add -A; git commit; git push origin main`.
+
+## Services (FlowRate.Core)
+- `Iperf3Locator` — resolves iperf3.exe (app base dir wins over PATH) and reads `--version`; used by the startup gate, the Info dialog, and `Iperf3Service`.
+- `UpdateService` — GitHub `releases/latest` checks for `RejectH0/FlowRate` and `ar51an/iperf3-win-builds` (unauthenticated, 60 req/hr; manual checks only).
+
 ## Documentation Policy
 Every iteration must meaningfully update (no null updates):
 1. **README.md** — user-facing state: version, features, roadmap.

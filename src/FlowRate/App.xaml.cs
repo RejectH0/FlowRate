@@ -57,12 +57,53 @@ public partial class App : Application
             _window.Closed += OnMainWindowClosed;
             _window.Activate();
             Logger.Info("FlowRate launched successfully; main window activated and visible.");
+
+            // First-run gate: verify iperf3 is available; if not, inform the user
+            // where to get it and exit. Runs after activation so the dialog has a XamlRoot.
+            _ = VerifyIperf3InstalledAsync();
         }
         catch (Exception ex)
         {
             Logger.Error("Startup failed while creating or activating the main window.", ex);
             throw;
         }
+    }
+
+    /// <summary>
+    /// Checks that iperf3 is installed (app directory or PATH). If missing, shows a
+    /// blocking dialog directing the user to the official Windows builds and exits.
+    /// </summary>
+    private async System.Threading.Tasks.Task VerifyIperf3InstalledAsync()
+    {
+        var exePath = FlowRate.Core.Services.Iperf3Locator.FindExecutable();
+        if (exePath is not null)
+        {
+            Logger.Info($"iperf3 detected at: {exePath}");
+            return;
+        }
+
+        Logger.Error("iperf3 was not found in the application directory or on PATH.");
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = _window!.Content.XamlRoot,
+            Title = "iperf3 Not Found",
+            Content = "FlowRate requires iperf3, which was not found in the application folder or on your system PATH.\n\n" +
+                      "Please download and install the iperf3 Windows package, then restart FlowRate:\n" +
+                      FlowRate.Core.Services.Iperf3Locator.WindowsBuildsUrl,
+            PrimaryButtonText = "Open Download Page",
+            CloseButtonText = "Exit",
+            DefaultButton = ContentDialogButton.Primary,
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            _ = await Windows.System.Launcher.LaunchUriAsync(new Uri(FlowRate.Core.Services.Iperf3Locator.WindowsBuildsUrl));
+        }
+
+        Logger.Info("Exiting: iperf3 is not installed.");
+        _window.Close();
     }
 
     private void OnMainWindowClosed(object sender, WindowEventArgs args)

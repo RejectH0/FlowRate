@@ -2,7 +2,23 @@
 
 Living task list. Update every iteration. Completed items move to CHANGELOG.md.
 
-## Current Iteration (v0.6.0 — MSIX Packaging & Standalone Deployment)
+## Current Iteration (v0.7.0 — UI Fixes, Detection & Updates) — DONE
+- [x] Fix title-bar overlap (AppTitleBar drag region + SetTitleBar)
+- [x] Embed exe icon (`ApplicationIcon`) so taskbar/Start shows the FlowRate icon
+- [x] iperf3 startup detection with exit dialog linking to ar51an/iperf3-win-builds
+- [x] Info (i) dialog: iperf3 path/version, FlowRate version, GitHub update checks
+- [x] UpdateService (GitHub releases/latest) for FlowRate and iperf3 Windows builds
+- [x] Publisher CN changed to `CN=flowrate.tech`
+- [x] README acknowledgements for the iperf3 team (sourced, hyperlinked)
+- [ ] User smoke-test: title bar, taskbar icon, Info dialog, missing-iperf3 path
+
+## Next Up
+- [ ] Publish first GitHub Release (v0.7.0) so the FlowRate update check has data
+- [ ] Full auto-update (download + install) once signing/hosting via flowrate.tech is decided
+- [ ] MSIX signing: self-signed test certificate with subject `CN=flowrate.tech`; sideload validation
+- [ ] Smoke-test packaged app: settings, history, and export paths under package identity
+
+## Previous Iteration (v0.6.0 — MSIX Packaging & Standalone Deployment)
 - [x] Verify/create `Package.appxmanifest` and package identity configuration — identity set to `RejectH0.FlowRate` / `CN=RejectH0` / 0.6.0.0; unused `systemAIModels` capability removed
 - [x] Create publish profiles — `win-x64.pubxml` (existing) + new `win-x64-unpackaged.pubxml` (standalone)
 - [x] Self-contained Release publish — verified 516 files / ~267 MB; trimming disabled in unpackaged profile (unsafe with WinUI 3 XAML reflection)

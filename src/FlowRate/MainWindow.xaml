@@ -15,7 +15,31 @@
 		<MicaBackdrop />
 	</Window.SystemBackdrop>
 
-	<ScrollViewer Padding="7,24,7,28" VerticalScrollBarVisibility="Auto">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="36" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+
+		<!--  Custom title bar drag region (content extends into the title bar)  -->
+		<Grid x:Name="AppTitleBar" Grid.Row="0" Background="Transparent">
+			<StackPanel
+				Margin="16,0,0,0"
+				VerticalAlignment="Center"
+				Orientation="Horizontal"
+				Spacing="8">
+				<Image Width="16" Height="16" Source="Assets/Square44x44Logo.scale-100.png" />
+				<TextBlock
+					VerticalAlignment="Center"
+					Style="{ThemeResource CaptionTextBlockStyle}"
+					Text="FlowRate" />
+			</StackPanel>
+		</Grid>
+
+		<ScrollViewer
+			Grid.Row="1"
+			Padding="7,12,7,28"
+			VerticalScrollBarVisibility="Auto">
 		<Grid MaxWidth="1480" HorizontalAlignment="Center">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
@@ -91,16 +115,28 @@
 						Text="Network Benchmark Tool powered by iperf3" />
 				</StackPanel>
 
-				<Button
+				<StackPanel
 					Grid.Column="2"
-					Width="44"
-					Height="44"
 					VerticalAlignment="Center"
-					Click="OnSettingsClick"
-					CornerRadius="10"
-					ToolTipService.ToolTip="Preferences">
-					<FontIcon FontSize="18" Glyph="&#xE713;" />
-				</Button>
+					Orientation="Horizontal"
+					Spacing="8">
+					<Button
+						Width="44"
+						Height="44"
+						Click="OnInfoClick"
+						CornerRadius="10"
+						ToolTipService.ToolTip="About &amp; updates">
+						<FontIcon FontSize="18" Glyph="&#xE946;" />
+					</Button>
+					<Button
+						Width="44"
+						Height="44"
+						Click="OnSettingsClick"
+						CornerRadius="10"
+						ToolTipService.ToolTip="Preferences">
+						<FontIcon FontSize="18" Glyph="&#xE713;" />
+					</Button>
+				</StackPanel>
 			</Grid>
 
 			<!--  ============ Responsive content ============  -->
@@ -529,4 +565,5 @@
 			</Grid>
 		</Grid>
 	</ScrollViewer>
+	</Grid>
 </Window>
