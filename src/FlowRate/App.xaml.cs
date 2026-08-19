@@ -38,7 +38,11 @@ public partial class App : Application
         AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
         System.Threading.Tasks.TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 
-        Logger.Info($"FlowRate starting. Log directory: {Logger.LogDirectory}");
+        // Definite process-lifetime markers so a normal user close is never mistaken
+        // for a crash. ProcessExit fires when the runtime shuts down cleanly.
+        AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+
+        Logger.Info($"===== FlowRate process starting (PID {Environment.ProcessId}). Log directory: {Logger.LogDirectory} =====");
     }
 
     /// <summary>
@@ -47,8 +51,28 @@ public partial class App : Application
     /// <param name="args">Details about the launch request and process.</param>
     protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
-        _window = new MainWindow();
-        _window.Activate();
+        try
+        {
+            _window = new MainWindow();
+            _window.Closed += OnMainWindowClosed;
+            _window.Activate();
+            Logger.Info("FlowRate launched successfully; main window activated and visible.");
+        }
+        catch (Exception ex)
+        {
+            Logger.Error("Startup failed while creating or activating the main window.", ex);
+            throw;
+        }
+    }
+
+    private void OnMainWindowClosed(object sender, WindowEventArgs args)
+    {
+        Logger.Info("Main window closed by user. Beginning normal shutdown.");
+    }
+
+    private void OnProcessExit(object? sender, EventArgs e)
+    {
+        Logger.Info($"===== FlowRate process terminated normally (PID {Environment.ProcessId}) =====");
     }
 
     private void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)

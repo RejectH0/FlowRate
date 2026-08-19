@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -17,6 +17,20 @@ public partial class MainViewModel : ObservableObject
     private readonly Iperf3Service _iperf3Service = new();
     private readonly DispatcherQueue _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
     private CancellationTokenSource? _cts;
+
+	/// <summary>App version string shown in the header, formatted as "v0.60".</summary>
+	[ObservableProperty]
+	public partial string AppVersion { get; set; } = FormatVersion();
+
+	/// <summary>Toggles the header version label. Kept on during development.</summary>
+	[ObservableProperty]
+	public partial bool IsVersionVisible { get; set; } = true;
+
+	private static string FormatVersion()
+	{
+		var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+		return v is null ? "(v0.0)" : $"(v{v.Major}.{v.Minor}{v.Build})";
+	}
 
     public MainViewModel()
     {
@@ -112,7 +126,15 @@ public partial class MainViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(ExportCsvCommand))]
     [NotifyCanExecuteChangedFor(nameof(RunBenchmarkCommand))]
     [NotifyCanExecuteChangedFor(nameof(CancelBenchmarkCommand))]
+	[NotifyPropertyChangedFor(nameof(IsIdle))]
+	[NotifyPropertyChangedFor(nameof(StatusGlyph))]
     public partial bool IsRunning { get; set; } = false;
+
+	/// <summary>True when no benchmark is running; drives run/stop and status visuals.</summary>
+	public bool IsIdle => !IsRunning;
+
+	/// <summary>Segoe Fluent glyph for the status card: play when running, check when idle.</summary>
+	public string StatusGlyph => IsRunning ? "\uE768" : "\uE73E";
 
     [ObservableProperty]
     public partial string StatusMessage { get; set; } = "Ready";
@@ -144,6 +166,20 @@ public partial class MainViewModel : ObservableObject
 
     /// <summary>Recently used server addresses.</summary>
     public ObservableCollection<string> RecentServers { get; } = new();
+
+    /// <summary>
+    /// Backing for the Recent Servers dropdown. Kept separate from <see cref="ServerAddress"/>
+    /// so that selecting an item copies into the editable address field, while typing in the
+    /// address field is never overwritten by the dropdown clearing its selection.
+    /// </summary>
+    [ObservableProperty]
+    public partial string? SelectedRecentServer { get; set; }
+
+    partial void OnSelectedRecentServerChanged(string? value)
+    {
+        if (!string.IsNullOrWhiteSpace(value))
+            ServerAddress = value;
+    }
 
     /// <summary>True once at least one chart point exists; reveals the chart card.</summary>
     [ObservableProperty]
@@ -371,6 +407,13 @@ public partial class MainViewModel : ObservableObject
 
     private bool CanApplyProfile() => SelectedProfile is not null;
 
+    /// <summary>Applies a profile automatically when it is chosen in the dropdown.</summary>
+    partial void OnSelectedProfileChanged(BenchmarkProfile? value)
+    {
+        if (value is not null)
+            ApplyProfile();
+    }
+
     /// <summary>Applies the selected profile's values to the current configuration.</summary>
     [RelayCommand(CanExecute = nameof(CanApplyProfile))]
     private void ApplyProfile()
@@ -393,10 +436,15 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void SaveProfile()
     {
+        // Determine the target name: an explicitly typed name creates/renames a profile,
+        // otherwise fall back to the currently selected profile so "tweak and Save" just works.
         var name = NewProfileName?.Trim();
         if (string.IsNullOrEmpty(name))
+            name = SelectedProfile?.Name;
+
+        if (string.IsNullOrEmpty(name))
         {
-            StatusMessage = "Enter a profile name first";
+            StatusMessage = "Select a profile or enter a name to save";
             return;
         }
 

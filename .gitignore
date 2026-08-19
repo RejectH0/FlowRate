@@ -7,3 +7,5 @@
 
 # Keep fixtures
 !fixtures/
+
+*.bak

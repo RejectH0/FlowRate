@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
@@ -9,15 +9,15 @@
   IgnorableNamespaces="uap rescap systemai">
 
   <Identity
-    Name="D442A4DB-FE60-470E-9A72-D08523FE55C3"
-    Publisher="CN=AppPublisher"
-    Version="1.0.0.0" />
+    Name="RejectH0.FlowRate"
+    Publisher="CN=RejectH0"
+    Version="0.6.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="D442A4DB-FE60-470E-9A72-D08523FE55C3" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>FlowRate</DisplayName>
-    <PublisherDisplayName>AppPublisher</PublisherDisplayName>
+    <PublisherDisplayName>RejectH0</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -48,6 +48,6 @@
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
-    <systemai:Capability Name="systemAIModels"/>
   </Capabilities>
 </Package>
+

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <Window
 	x:Class="FlowRate.MainWindow"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -15,11 +15,46 @@
 		<MicaBackdrop />
 	</Window.SystemBackdrop>
 
-	<ScrollViewer Padding="28,24,28,28" VerticalScrollBarVisibility="Auto">
-		<StackPanel MaxWidth="1180" Spacing="20">
+	<ScrollViewer Padding="7,24,7,28" VerticalScrollBarVisibility="Auto">
+		<Grid MaxWidth="1480" HorizontalAlignment="Center">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+
+			<VisualStateManager.VisualStateGroups>
+				<VisualStateGroup>
+					<VisualState x:Name="WideLayout">
+						<VisualState.StateTriggers>
+							<AdaptiveTrigger MinWindowWidth="1120" />
+						</VisualState.StateTriggers>
+						<VisualState.Setters>
+							<Setter Target="LeftColumn.Width" Value="480" />
+							<Setter Target="ConfigCard.(Grid.ColumnSpan)" Value="1" />
+							<Setter Target="DashboardPanel.(Grid.Row)" Value="0" />
+							<Setter Target="DashboardPanel.(Grid.Column)" Value="1" />
+							<Setter Target="DashboardPanel.(Grid.ColumnSpan)" Value="1" />
+							<Setter Target="DashboardPanel.Margin" Value="20,0,0,0" />
+						</VisualState.Setters>
+					</VisualState>
+					<VisualState x:Name="NarrowLayout">
+						<VisualState.StateTriggers>
+							<AdaptiveTrigger MinWindowWidth="0" />
+						</VisualState.StateTriggers>
+						<VisualState.Setters>
+							<Setter Target="LeftColumn.Width" Value="*" />
+							<Setter Target="ConfigCard.(Grid.ColumnSpan)" Value="2" />
+							<Setter Target="DashboardPanel.(Grid.Row)" Value="1" />
+							<Setter Target="DashboardPanel.(Grid.Column)" Value="0" />
+							<Setter Target="DashboardPanel.(Grid.ColumnSpan)" Value="2" />
+							<Setter Target="DashboardPanel.Margin" Value="0,20,0,0" />
+						</VisualState.Setters>
+					</VisualState>
+				</VisualStateGroup>
+			</VisualStateManager.VisualStateGroups>
 
 			<!--  ============ Branded Header ============  -->
-			<Grid>
+			<Grid Grid.Row="0" Margin="0,0,0,20">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="Auto" />
 					<ColumnDefinition Width="*" />
@@ -42,7 +77,15 @@
 				</Border>
 
 				<StackPanel Grid.Column="1" VerticalAlignment="Center">
-					<TextBlock Style="{StaticResource BrandTitleText}" Text="FlowRate" />
+					<StackPanel Orientation="Horizontal" Spacing="8">
+						<TextBlock Style="{StaticResource BrandTitleText}" Text="FlowRate" />
+						<TextBlock
+							VerticalAlignment="Center"
+							Style="{StaticResource BrandTitleText}"
+							Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+							Text="{x:Bind ViewModel.AppVersion, Mode=OneWay}"
+							Visibility="{x:Bind ViewModel.IsVersionVisible, Mode=OneWay}" />
+					</StackPanel>
 					<TextBlock
 						Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 						Text="Network Benchmark Tool powered by iperf3" />
@@ -60,345 +103,430 @@
 				</Button>
 			</Grid>
 
-			<!--  ============ Configuration Card ============  -->
-			<Border Style="{StaticResource BrandCard}">
-				<StackPanel Spacing="14">
-					<TextBlock Style="{StaticResource BrandCaptionText}" Text="TEST CONFIGURATION" />
+			<!--  ============ Responsive content ============  -->
+			<Grid Grid.Row="1">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition x:Name="LeftColumn" Width="*" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
 
-					<!--  Profiles row  -->
-					<Grid ColumnSpacing="8">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="Auto" />
-						</Grid.ColumnDefinitions>
+				<!--  ============ Configuration Card ============  -->
+				<Border
+					x:Name="ConfigCard"
+					Grid.Row="0"
+					Grid.Column="0"
+					VerticalAlignment="Top"
+					Style="{StaticResource BrandCard}">
+					<StackPanel Spacing="14">
+						<TextBlock Style="{StaticResource BrandCaptionText}" Text="TEST CONFIGURATION" />
+
+						<!--  Profiles drawer  -->
+						<Expander
+							HorizontalAlignment="Stretch"
+							HorizontalContentAlignment="Stretch"
+							IsExpanded="False">
+							<Expander.Header>
+								<StackPanel Orientation="Horizontal" Spacing="10">
+									<FontIcon FontSize="16" Glyph="&#xE8FD;" />
+									<TextBlock
+										VerticalAlignment="Center"
+										FontWeight="SemiBold"
+										Text="Profiles" />
+									<TextBlock
+										VerticalAlignment="Center"
+										Opacity="0.6"
+										Text="{x:Bind ViewModel.SelectedProfile.Name, Mode=OneWay, FallbackValue='none selected'}" />
+								</StackPanel>
+							</Expander.Header>
+							<StackPanel Spacing="12">
+								<!--  Load / delete row  -->
+								<Grid ColumnSpacing="8">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+
+									<ComboBox
+										Grid.Column="0"
+										HorizontalAlignment="Stretch"
+										DisplayMemberPath="Name"
+										Header="Load a saved profile"
+										ItemsSource="{x:Bind ViewModel.Profiles, Mode=OneWay}"
+										PlaceholderText="Select a saved profile"
+										SelectedItem="{x:Bind ViewModel.SelectedProfile, Mode=TwoWay}" />
+
+									<Button
+										Grid.Column="1"
+										Margin="0,26,0,0"
+										Command="{x:Bind ViewModel.DeleteProfileCommand}"
+										Content="Delete" />
+								</Grid>
+
+								<!--  Save-profile row  -->
+								<Grid ColumnSpacing="8">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+
+									<TextBox
+										Grid.Column="0"
+										Header="Save as profile"
+										PlaceholderText="Name to create, or blank to update selected"
+										Text="{x:Bind ViewModel.NewProfileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+									<Button
+										Grid.Column="1"
+										Margin="0,26,0,0"
+										Command="{x:Bind ViewModel.SaveProfileCommand}"
+										Content="Save" />
+								</Grid>
+							</StackPanel>
+						</Expander>
+
+						<Grid ColumnSpacing="12">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
+
+							<TextBox
+								Grid.Column="0"
+								Header="Server Address"
+								PlaceholderText="e.g., 192.168.1.100 or server.local"
+								Text="{x:Bind ViewModel.ServerAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+							<NumberBox
+								Grid.Column="1"
+								Width="110"
+								Header="Port"
+								Maximum="65535"
+								Minimum="1"
+								SpinButtonPlacementMode="Compact"
+								Value="{x:Bind ViewModel.Port, Mode=TwoWay}" />
+						</Grid>
+
+						<Grid ColumnSpacing="12">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+
+							<NumberBox
+								Grid.Column="0"
+								Header="Duration (seconds)"
+								Maximum="3600"
+								Minimum="1"
+								SpinButtonPlacementMode="Compact"
+								Value="{x:Bind ViewModel.DurationSeconds, Mode=TwoWay}" />
+
+							<NumberBox
+								Grid.Column="1"
+								Header="Parallel Streams"
+								Maximum="128"
+								Minimum="1"
+								SpinButtonPlacementMode="Compact"
+								Value="{x:Bind ViewModel.ParallelStreams, Mode=TwoWay}" />
+						</Grid>
+
+						<CheckBox
+							Content="Reverse Mode (server sends)"
+							IsChecked="{x:Bind ViewModel.ReverseMode, Mode=TwoWay}" />
+
+						<CheckBox
+							Content="UDP Mode (measures jitter &amp; packet loss)"
+							IsChecked="{x:Bind ViewModel.UdpMode, Mode=TwoWay}" />
+
+						<Grid ColumnSpacing="12">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+
+							<NumberBox
+								Grid.Column="0"
+								Header="Target Bitrate (Mbps, 0 = unlimited)"
+								Minimum="0"
+								SpinButtonPlacementMode="Compact"
+								Value="{x:Bind ViewModel.TargetBitrateMbps, Mode=TwoWay}" />
+
+							<NumberBox
+								Grid.Column="1"
+								Header="TCP Window (KB, 0 = default)"
+								Minimum="0"
+								SpinButtonPlacementMode="Compact"
+								Value="{x:Bind ViewModel.WindowSizeKB, Mode=TwoWay}" />
+						</Grid>
 
 						<ComboBox
-							Grid.Column="0"
 							HorizontalAlignment="Stretch"
-							DisplayMemberPath="Name"
-							Header="Profile"
-							ItemsSource="{x:Bind ViewModel.Profiles, Mode=OneWay}"
-							PlaceholderText="Select a saved profile"
-							SelectedItem="{x:Bind ViewModel.SelectedProfile, Mode=TwoWay}" />
+							Header="Recent Servers"
+							ItemsSource="{x:Bind ViewModel.RecentServers, Mode=OneWay}"
+							PlaceholderText="Pick a recently used server"
+							SelectedItem="{x:Bind ViewModel.SelectedRecentServer, Mode=TwoWay}" />
 
-						<Button
-							Grid.Column="1"
-							Margin="0,26,0,0"
-							Command="{x:Bind ViewModel.ApplyProfileCommand}"
-							Content="Load" />
+						<Grid ColumnSpacing="12">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
 
-						<Button
-							Grid.Column="2"
-							Margin="0,26,0,0"
-							Command="{x:Bind ViewModel.DeleteProfileCommand}"
-							Content="Delete" />
+							<Button
+								Grid.Column="0"
+								Height="44"
+								HorizontalAlignment="Stretch"
+								Background="{StaticResource BrandAccentGradient}"
+								Command="{x:Bind ViewModel.RunBenchmarkCommand}"
+								CornerRadius="10">
+								<StackPanel Orientation="Horizontal" Spacing="8">
+									<FontIcon
+										FontSize="16"
+										Foreground="White"
+										Glyph="&#xE768;" />
+									<TextBlock
+										FontWeight="SemiBold"
+										Foreground="White"
+										Text="Run Test" />
+								</StackPanel>
+							</Button>
 
-						<TextBox
-							Grid.Column="3"
-							Width="140"
-							Margin="0,26,0,0"
-							PlaceholderText="New profile name"
-							Text="{x:Bind ViewModel.NewProfileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+							<Button
+								Grid.Column="1"
+								Height="44"
+								Command="{x:Bind ViewModel.CancelBenchmarkCommand}"
+								CornerRadius="10"
+								ToolTipService.ToolTip="Stop the running benchmark"
+								Visibility="{x:Bind ViewModel.IsRunning, Mode=OneWay}">
+								<StackPanel Orientation="Horizontal" Spacing="8">
+									<FontIcon FontSize="16" Glyph="&#xE71A;" />
+									<TextBlock Text="Stop" />
+								</StackPanel>
+							</Button>
+						</Grid>
 
-						<Button
-							Grid.Column="4"
-							Margin="0,26,0,0"
-							Command="{x:Bind ViewModel.SaveProfileCommand}"
-							Content="Save" />
-					</Grid>
-
-					<Grid ColumnSpacing="12">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="Auto" />
-						</Grid.ColumnDefinitions>
-
-						<TextBox
-							Grid.Column="0"
-							Header="Server Address"
-							PlaceholderText="e.g., 192.168.1.100 or server.local"
-							Text="{x:Bind ViewModel.ServerAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-						<NumberBox
-							Grid.Column="1"
-							Width="110"
-							Header="Port"
-							Maximum="65535"
-							Minimum="1"
-							SpinButtonPlacementMode="Compact"
-							Value="{x:Bind ViewModel.Port, Mode=TwoWay}" />
-					</Grid>
-
-					<Grid ColumnSpacing="12">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="*" />
-						</Grid.ColumnDefinitions>
-
-						<NumberBox
-							Grid.Column="0"
-							Header="Duration (seconds)"
-							Maximum="3600"
-							Minimum="1"
-							SpinButtonPlacementMode="Compact"
-							Value="{x:Bind ViewModel.DurationSeconds, Mode=TwoWay}" />
-
-						<NumberBox
-							Grid.Column="1"
-							Header="Parallel Streams"
-							Maximum="128"
-							Minimum="1"
-							SpinButtonPlacementMode="Compact"
-							Value="{x:Bind ViewModel.ParallelStreams, Mode=TwoWay}" />
-					</Grid>
-
-					<CheckBox
-						Content="Reverse Mode (server sends)"
-						IsChecked="{x:Bind ViewModel.ReverseMode, Mode=TwoWay}" />
-
-					<CheckBox
-						Content="UDP Mode (measures jitter &amp; packet loss)"
-						IsChecked="{x:Bind ViewModel.UdpMode, Mode=TwoWay}" />
-
-					<Grid ColumnSpacing="12">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="*" />
-						</Grid.ColumnDefinitions>
-
-						<NumberBox
-							Grid.Column="0"
-							Header="Target Bitrate (Mbps, 0 = unlimited)"
-							Minimum="0"
-							SpinButtonPlacementMode="Compact"
-							Value="{x:Bind ViewModel.TargetBitrateMbps, Mode=TwoWay}" />
-
-						<NumberBox
-							Grid.Column="1"
-							Header="TCP Window (KB, 0 = default)"
-							Minimum="0"
-							SpinButtonPlacementMode="Compact"
-							Value="{x:Bind ViewModel.WindowSizeKB, Mode=TwoWay}" />
-					</Grid>
-
-					<ComboBox
-						HorizontalAlignment="Stretch"
-						Header="Recent Servers"
-						ItemsSource="{x:Bind ViewModel.RecentServers, Mode=OneWay}"
-						PlaceholderText="Pick a recently used server"
-						SelectedItem="{x:Bind ViewModel.ServerAddress, Mode=TwoWay}" />
-
-					<Grid ColumnSpacing="12">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="Auto" />
-						</Grid.ColumnDefinitions>
-
-						<Button
-							Grid.Column="0"
-							Height="44"
-							HorizontalAlignment="Stretch"
-							Background="{StaticResource BrandAccentGradient}"
-							Command="{x:Bind ViewModel.RunBenchmarkCommand}"
+						<!--  ============ Status card ============  -->
+						<Border
+							Padding="14"
+							Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+							BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+							BorderThickness="1"
 							CornerRadius="10">
-							<StackPanel
-								Orientation="Horizontal"
-								Spacing="8">
-								<ProgressRing
-									Width="18"
-									Height="18"
-									Foreground="White"
-									IsActive="{x:Bind ViewModel.IsRunning, Mode=OneWay}"
-									Visibility="{x:Bind ViewModel.IsRunning, Mode=OneWay}" />
-								<FontIcon
-									FontSize="16"
-									Foreground="White"
-									Glyph="&#xE768;" />
-								<TextBlock
-									FontWeight="SemiBold"
-									Foreground="White"
-									Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" />
-							</StackPanel>
-						</Button>
+							<Grid ColumnSpacing="12">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="*" />
+								</Grid.ColumnDefinitions>
 
-						<Button
-							Grid.Column="1"
-							Height="44"
-							Command="{x:Bind ViewModel.CancelBenchmarkCommand}"
-							CornerRadius="10"
-							ToolTipService.ToolTip="Stop the running benchmark">
-							<StackPanel Orientation="Horizontal" Spacing="8">
-								<FontIcon FontSize="16" Glyph="&#xE71A;" />
-								<TextBlock Text="Stop" />
-							</StackPanel>
-						</Button>
-					</Grid>
-				</StackPanel>
-			</Border>
+								<Grid
+									Grid.Column="0"
+									Width="24"
+									Height="24"
+									VerticalAlignment="Center">
+									<ProgressRing
+										Width="24"
+										Height="24"
+										IsActive="{x:Bind ViewModel.IsRunning, Mode=OneWay}"
+										Visibility="{x:Bind ViewModel.IsRunning, Mode=OneWay}" />
+									<FontIcon
+										FontSize="18"
+										Foreground="{ThemeResource SystemAccentColorLight2}"
+										Glyph="{x:Bind ViewModel.StatusGlyph, Mode=OneWay}"
+										Visibility="{x:Bind ViewModel.IsIdle, Mode=OneWay}" />
+								</Grid>
 
-			<!--  ============ Live Throughput Card ============  -->
-			<Border Style="{StaticResource BrandCard}">
-				<StackPanel Spacing="16">
-					<Grid>
-						<TextBlock Style="{StaticResource BrandSubtitleText}" Text="Current Throughput" />
-						<CheckBox
-							HorizontalAlignment="Right"
-							Content="Show all intervals"
-							IsChecked="{x:Bind ViewModel.ShowAllIntervals, Mode=TwoWay}" />
-					</Grid>
-
-					<!--  Gauge + big animated readouts side by side  -->
-					<Grid ColumnSpacing="28">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="*" />
-						</Grid.ColumnDefinitions>
-
-						<controls:SpeedometerGauge
-							Grid.Column="0"
-							VerticalAlignment="Center"
-							Unit="Mbps"
-							Average="{x:Bind ViewModel.CurrentThroughputMbps, Mode=OneWay}"
-							Maximum="{x:Bind ViewModel.GaugeMaximumMbps, Mode=OneWay}"
-							Value="{x:Bind ViewModel.AverageThroughputMbps, Mode=OneWay}" />
-
-						<StackPanel
-							Grid.Column="1"
-							VerticalAlignment="Center"
-							Spacing="18">
-							<!--  Current  -->
-							<StackPanel Spacing="2">
-								<StackPanel Orientation="Horizontal" Spacing="8">
-									<Border
-										Width="12"
-										Height="12"
-										VerticalAlignment="Center"
-										Background="{StaticResource BrandGreenBrush}"
-										CornerRadius="3" />
-									<TextBlock Style="{StaticResource BrandCaptionText}" Text="AVERAGE (NEEDLE)" />
+								<StackPanel Grid.Column="1" VerticalAlignment="Center">
+									<TextBlock
+										FontSize="11"
+										FontWeight="SemiBold"
+										Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+										Text="STATUS" />
+									<TextBlock
+										FontWeight="SemiBold"
+										Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+										TextTrimming="CharacterEllipsis" />
 								</StackPanel>
-								<TextBlock
-									behaviors:NumberAnimator.Format="F3"
-									behaviors:NumberAnimator.Suffix=" Gbps"
-									behaviors:NumberAnimator.Value="{x:Bind ViewModel.AverageThroughputGbps, Mode=OneWay}"
-									Foreground="{StaticResource BrandSpeedGradient}"
-									Style="{StaticResource BrandDisplayText}" />
-							</StackPanel>
+							</Grid>
+						</Border>
+					</StackPanel>
+				</Border>
 
-							<!--  Average  -->
-							<StackPanel Spacing="2">
-								<StackPanel Orientation="Horizontal" Spacing="8">
-									<Border
-										Width="12"
-										Height="12"
-										VerticalAlignment="Center"
-										Background="{StaticResource BrandAmberBrush}"
-										CornerRadius="3" />
-									<TextBlock Style="{StaticResource BrandCaptionText}" Text="CURRENT (MARKER)" />
+				<!--  ============ Dashboard column ============  -->
+				<StackPanel
+					x:Name="DashboardPanel"
+					Grid.Row="0"
+					Grid.Column="1"
+					Margin="20,0,0,0"
+					Spacing="20">
+
+					<!--  ============ Live Throughput Card ============  -->
+					<Border Style="{StaticResource BrandCard}">
+						<StackPanel Spacing="16">
+							<Grid>
+								<TextBlock Style="{StaticResource BrandSubtitleText}" Text="Current Throughput" />
+								<CheckBox
+									HorizontalAlignment="Right"
+									Content="Show all intervals"
+									IsChecked="{x:Bind ViewModel.ShowAllIntervals, Mode=TwoWay}" />
+							</Grid>
+
+							<!--  Gauge + big animated readouts side by side  -->
+							<Viewbox
+								HorizontalAlignment="Left"
+								StretchDirection="DownOnly">
+							<Grid ColumnSpacing="28">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="*" />
+								</Grid.ColumnDefinitions>
+
+								<controls:SpeedometerGauge
+									Grid.Column="0"
+									VerticalAlignment="Center"
+									Unit="Mbps"
+									Average="{x:Bind ViewModel.CurrentThroughputMbps, Mode=OneWay}"
+									Maximum="{x:Bind ViewModel.GaugeMaximumMbps, Mode=OneWay}"
+									Value="{x:Bind ViewModel.AverageThroughputMbps, Mode=OneWay}" />
+
+								<StackPanel
+									Grid.Column="1"
+									VerticalAlignment="Center"
+									Spacing="18">
+									<!--  Current  -->
+									<StackPanel Spacing="2">
+										<StackPanel Orientation="Horizontal" Spacing="8">
+											<Border
+												Width="12"
+												Height="12"
+												VerticalAlignment="Center"
+												Background="{StaticResource BrandGreenBrush}"
+												CornerRadius="3" />
+											<TextBlock Style="{StaticResource BrandCaptionText}" Text="AVERAGE (NEEDLE)" />
+										</StackPanel>
+										<TextBlock
+											behaviors:NumberAnimator.Format="F3"
+											behaviors:NumberAnimator.Suffix=" Gbps"
+											behaviors:NumberAnimator.Value="{x:Bind ViewModel.AverageThroughputGbps, Mode=OneWay}"
+											Foreground="{StaticResource BrandSpeedGradient}"
+											Style="{StaticResource BrandDisplayText}" />
+									</StackPanel>
+
+									<!--  Average  -->
+									<StackPanel Spacing="2">
+										<StackPanel Orientation="Horizontal" Spacing="8">
+											<Border
+												Width="12"
+												Height="12"
+												VerticalAlignment="Center"
+												Background="{StaticResource BrandAmberBrush}"
+												CornerRadius="3" />
+											<TextBlock Style="{StaticResource BrandCaptionText}" Text="CURRENT (MARKER)" />
+										</StackPanel>
+										<TextBlock
+											behaviors:NumberAnimator.Format="F3"
+											behaviors:NumberAnimator.Suffix=" Gbps"
+											behaviors:NumberAnimator.Value="{x:Bind ViewModel.CurrentThroughputGbps, Mode=OneWay}"
+											Foreground="{ThemeResource TextFillColorPrimaryBrush}"
+											Style="{StaticResource BrandDisplayText}" />
+									</StackPanel>
 								</StackPanel>
-								<TextBlock
-									behaviors:NumberAnimator.Format="F3"
-									behaviors:NumberAnimator.Suffix=" Gbps"
-									behaviors:NumberAnimator.Value="{x:Bind ViewModel.CurrentThroughputGbps, Mode=OneWay}"
-									Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-									Style="{StaticResource BrandDisplayText}" />
-							</StackPanel>
+							</Grid>
+							</Viewbox>
+
+							<!--  Live interval feed  -->
+							<Border
+								Padding="12"
+								Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+								CornerRadius="8">
+								<ScrollViewer
+									MaxHeight="170"
+									VerticalScrollBarVisibility="Auto"
+									VerticalScrollMode="Auto">
+									<TextBlock
+										FontFamily="Cascadia Mono, Consolas"
+										FontSize="13"
+										IsTextSelectionEnabled="True"
+										Text="{x:Bind ViewModel.LiveThroughputFeed, Mode=OneWay}" />
+								</ScrollViewer>
+							</Border>
 						</StackPanel>
-					</Grid>
+					</Border>
 
-					<!--  Live interval feed  -->
-					<Border
-						Padding="12"
-						Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
-						CornerRadius="8">
-						<ScrollViewer
-							MaxHeight="170"
-							VerticalScrollBarVisibility="Auto"
-							VerticalScrollMode="Auto">
+					<!--  ============ Throughput Chart Card ============  -->
+					<Border Style="{StaticResource BrandCard}" Visibility="{x:Bind ViewModel.HasChartData, Mode=OneWay}">
+						<StackPanel Spacing="12">
+							<TextBlock Style="{StaticResource BrandSubtitleText}" Text="Throughput Over Time" />
+							<controls:ThroughputChart Height="200" Values="{x:Bind ViewModel.IntervalMbps, Mode=OneWay}" />
+						</StackPanel>
+					</Border>
+
+					<!--  ============ Results Card ============  -->
+					<Border Style="{StaticResource BrandCard}" Visibility="{x:Bind ViewModel.HasResult, Mode=OneWay}">
+						<StackPanel Spacing="12">
+							<Grid>
+								<TextBlock
+									VerticalAlignment="Center"
+									Style="{StaticResource BrandCaptionText}"
+									Text="RESULTS" />
+								<StackPanel
+									HorizontalAlignment="Right"
+									Orientation="Horizontal"
+									Spacing="8">
+									<Button Command="{x:Bind ViewModel.CopyResultCommand}">
+										<StackPanel Orientation="Horizontal" Spacing="6">
+											<FontIcon FontSize="14" Glyph="&#xE8C8;" />
+											<TextBlock Text="Copy" />
+										</StackPanel>
+									</Button>
+									<Button Command="{x:Bind ViewModel.ExportJsonCommand}">
+										<StackPanel Orientation="Horizontal" Spacing="6">
+											<FontIcon FontSize="14" Glyph="&#xE896;" />
+											<TextBlock Text="Export JSON" />
+										</StackPanel>
+									</Button>
+									<Button Command="{x:Bind ViewModel.ExportCsvCommand}">
+										<StackPanel Orientation="Horizontal" Spacing="6">
+											<FontIcon FontSize="14" Glyph="&#xE896;" />
+											<TextBlock Text="Export CSV" />
+										</StackPanel>
+									</Button>
+								</StackPanel>
+							</Grid>
 							<TextBlock
 								FontFamily="Cascadia Mono, Consolas"
-								FontSize="13"
 								IsTextSelectionEnabled="True"
-								Text="{x:Bind ViewModel.LiveThroughputFeed, Mode=OneWay}" />
-						</ScrollViewer>
+								Text="{x:Bind ViewModel.ResultSummary, Mode=OneWay}" />
+						</StackPanel>
+					</Border>
+
+					<!--  ============ History Card ============  -->
+					<Border Style="{StaticResource BrandCard}">
+						<StackPanel Spacing="12">
+							<TextBlock Style="{StaticResource BrandSubtitleText}" Text="Run History" />
+							<TextBlock
+								Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+								Text="Select a past run to review and re-export it." />
+							<ListView
+								MaxHeight="220"
+								ItemsSource="{x:Bind ViewModel.History, Mode=OneWay}"
+								SelectedItem="{x:Bind ViewModel.SelectedHistory, Mode=TwoWay}"
+								SelectionMode="Single">
+								<ListView.ItemTemplate>
+									<DataTemplate xmlns:h="using:FlowRate.Core.History" x:DataType="h:HistoryEntry">
+										<TextBlock
+											FontFamily="Cascadia Mono, Consolas"
+											FontSize="13"
+											Text="{x:Bind DisplayText}" />
+									</DataTemplate>
+								</ListView.ItemTemplate>
+							</ListView>
+						</StackPanel>
 					</Border>
 				</StackPanel>
-			</Border>
-
-			<!--  ============ Throughput Chart Card ============  -->
-			<Border Style="{StaticResource BrandCard}" Visibility="{x:Bind ViewModel.HasChartData, Mode=OneWay}">
-				<StackPanel Spacing="12">
-					<TextBlock Style="{StaticResource BrandSubtitleText}" Text="Throughput Over Time" />
-					<controls:ThroughputChart Height="200" Values="{x:Bind ViewModel.IntervalMbps, Mode=OneWay}" />
-				</StackPanel>
-			</Border>
-
-			<!--  ============ Results Card ============  -->
-			<Border Style="{StaticResource BrandCard}" Visibility="{x:Bind ViewModel.HasResult, Mode=OneWay}">
-				<StackPanel Spacing="12">
-					<Grid>
-						<TextBlock
-							VerticalAlignment="Center"
-							Style="{StaticResource BrandCaptionText}"
-							Text="RESULTS" />
-						<StackPanel
-							HorizontalAlignment="Right"
-							Orientation="Horizontal"
-							Spacing="8">
-							<Button Command="{x:Bind ViewModel.CopyResultCommand}">
-								<StackPanel Orientation="Horizontal" Spacing="6">
-									<FontIcon FontSize="14" Glyph="&#xE8C8;" />
-									<TextBlock Text="Copy" />
-								</StackPanel>
-							</Button>
-							<Button Command="{x:Bind ViewModel.ExportJsonCommand}">
-								<StackPanel Orientation="Horizontal" Spacing="6">
-									<FontIcon FontSize="14" Glyph="&#xE896;" />
-									<TextBlock Text="Export JSON" />
-								</StackPanel>
-							</Button>
-							<Button Command="{x:Bind ViewModel.ExportCsvCommand}">
-								<StackPanel Orientation="Horizontal" Spacing="6">
-									<FontIcon FontSize="14" Glyph="&#xE896;" />
-									<TextBlock Text="Export CSV" />
-								</StackPanel>
-							</Button>
-						</StackPanel>
-					</Grid>
-					<TextBlock
-						FontFamily="Cascadia Mono, Consolas"
-						IsTextSelectionEnabled="True"
-						Text="{x:Bind ViewModel.ResultSummary, Mode=OneWay}" />
-				</StackPanel>
-			</Border>
-
-			<!--  ============ History Card ============  -->
-			<Border Style="{StaticResource BrandCard}">
-				<StackPanel Spacing="12">
-					<TextBlock Style="{StaticResource BrandSubtitleText}" Text="Run History" />
-					<TextBlock
-						Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-						Text="Select a past run to review and re-export it." />
-					<ListView
-						MaxHeight="220"
-						ItemsSource="{x:Bind ViewModel.History, Mode=OneWay}"
-						SelectedItem="{x:Bind ViewModel.SelectedHistory, Mode=TwoWay}"
-						SelectionMode="Single">
-						<ListView.ItemTemplate>
-							<DataTemplate xmlns:h="using:FlowRate.Core.History" x:DataType="h:HistoryEntry">
-								<TextBlock
-									FontFamily="Cascadia Mono, Consolas"
-									FontSize="13"
-									Text="{x:Bind DisplayText}" />
-							</DataTemplate>
-						</ListView.ItemTemplate>
-					</ListView>
-				</StackPanel>
-			</Border>
-
-		</StackPanel>
+			</Grid>
+		</Grid>
 	</ScrollViewer>
 </Window>

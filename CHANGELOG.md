@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.0] - MSIX Packaging & Standalone Deployment
+
+### Added
+- **Real package identity** (`src/FlowRate/Package.appxmanifest`): replaced template placeholders — identity is now `RejectH0.FlowRate` / `CN=RejectH0` at version `0.6.0.0`; removed the unused `systemAIModels` capability (only `runFullTrust` remains).
+- **MSIX packaging properties** (`src/FlowRate/FlowRate.csproj`): signing disabled by default so builds/CI never fail without a certificate; no bundling; package output routed to `artifacts\msix\`. To sign a sideload package, enable `AppxPackageSigningEnabled` with a certificate whose subject matches `CN=RejectH0`.
+- **Standalone unpackaged publish profile** (`src/FlowRate/Properties/PublishProfiles/win-x64-unpackaged.pubxml`): `WindowsPackageType=None` + `WindowsAppSDKSelfContained=true` + self-contained runtime produces a folder-deployable `FlowRate.exe` that runs without MSIX identity, an installed Windows App SDK runtime, or `dotnet run` debug-identity registration. Trimming is disabled in this profile (unsafe with WinUI 3 XAML reflection). Verified: 516 files / ~267 MB, exe and Windows App Runtime bootstrap present.
+
+### Verified
+- Solution builds clean (0 warnings / 0 errors) and all 16 tests pass with the packaging changes.
+
+---
+
+## [0.5.2] - Solution Platform Fix & Documentation Overhaul
+
+### Fixed
+- **Persistent "project configuration does not exist" warning** (`FlowRate.slnx`): the solution declared only an `x64` platform but had no per-project platform mapping, so Visual Studio's default mapping targeted `Debug|Any CPU` / `Release|Any CPU` for `FlowRate.csproj`, which declares `<Platforms>x64</Platforms>` only. Added an explicit `<Platform Solution="*|x64" Project="x64" />` mapping to `src/FlowRate/FlowRate.csproj` in the solution file. Deleting the `.vs` cache had no effect because the mapping is derived, not cached.
+
+### Added
+- **`TODO.md`**: living task list tracking the active milestone (v0.6.0 MSIX packaging) and backlog items.
+- **`docs/DEVELOPMENT.md`**: developer guide covering environment setup, build/test/run workflows, architecture, solution configuration notes, and the documentation-maintenance policy (README, CHANGELOG, TODO, and DEVELOPMENT are updated every iteration).
+
+### Changed
+- **`README.md`**: synced stale version/feature information (was still describing v0.3.0) to reflect the current 0.5.x feature set — run history, throughput chart, UDP mode, profiles, export, preferences — and updated the roadmap checkboxes.
+
+---
+
+## [0.5.1] - Fullscreen Layout, UDP Fix & Lifecycle Logging
+
+### Fixed
+- **Fullscreen centering** (`src/FlowRate/MainWindow.xaml`): the content root now uses `HorizontalAlignment="Center"`, so maximizing or going fullscreen keeps the layout centered instead of shifting the whole view to the right edge of the screen.
+- **UDP throughput** (`src/FlowRate.Core/Services/Iperf3Service.cs`): iperf3 defaults UDP to a 1 Mbit/sec target bitrate when `-b` is omitted, which produced abysmal UDP numbers. FlowRate now sends `-b 0` (unlimited) for UDP when no explicit target bitrate is set, so UDP is measured comparably to TCP. To verify UDP is working: run a UDP test and confirm the reported throughput is in the expected range along with jitter and 0%–low packet loss in the UDP Quality section.
+
+### Changed
+- **Definite process lifecycle logging** (`src/FlowRate/App.xaml.cs`): startup now logs a clear "launched successfully" marker after the main window is activated, a "closed by user" marker when the window is closed, and a "process terminated normally" marker via `AppDomain.ProcessExit`. This removes ambiguity between a normal user-initiated shutdown and an actual crash. The noisy first-chance exception handler was removed.
+
+---
+
 ## [0.5.0] - History, Chart, UDP, Profiles & UX
 
 ### Added

@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using FlowRate.Core.Domain;
@@ -125,6 +125,13 @@ public sealed class Iperf3Service
         {
             // -b takes bits/sec; 0 means unlimited (TCP default), so only emit when set.
             sb.Append($"-b {targetBitrateBitsPerSecond.Value} ");
+        }
+        else if (udp)
+        {
+            // iperf3 caps UDP at 1 Mbit/sec by default when -b is omitted, which looks
+            // like "broken" throughput. Explicitly request unlimited so UDP is measured
+            // the same way TCP is unless the user deliberately sets a target bitrate.
+            sb.Append("-b 0 ");
         }
 
         if (windowSizeBytes is > 0)
