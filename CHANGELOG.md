@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.1] - Self-Signed MSIX Sideload Pipeline
+
+### Added
+Output: `artifacts\msix\FlowRate_0.7.1.0_x64_Test\FlowRate_0.7.1.0_x64.msix`.
+
+### Changed
+- **Trimming disabled globally** (`src/FlowRate/FlowRate.csproj`): `PublishTrimmed` is now `False` for all configurations. The app's reflection-based `System.Text.Json` usage (parser, history, settings, export) generated IL2026/IL2104 trim warnings and is not trim-safe. Rebuild after the change produced zero trim warnings.
+
+---
+
 ## [0.7.0] - UI Fixes, iperf3 Detection, Info Dialog & Update Checks
 
 ### Fixed

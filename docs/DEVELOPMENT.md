@@ -42,9 +42,11 @@ Layered, one-way dependencies (UI → Services → Domain ← Transport):
 - Settings/profiles: `%LOCALAPPDATA%\FlowRate\settings.json`
 - Run history: `%LOCALAPPDATA%\FlowRate\history\` (`index.json` capped at 100 runs)
 
-## Packaging & Deployment (v0.6.0)
-- **Package identity**: `src/FlowRate/Package.appxmanifest` — `RejectH0.FlowRate`, publisher `CN=RejectH0`. Keep the manifest `Version` in sync with the csproj `<Version>`.
-- **MSIX (single-project)**: `EnableMsixTooling` is on; signing is **off by default** (`AppxPackageSigningEnabled=false`) so plain builds never fail. To produce a signed sideload package, create a self-signed cert with subject `CN=RejectH0`, then pass `-p:AppxPackageSigningEnabled=true -p:PackageCertificateThumbprint=<thumbprint>` (or use VS __Package and Publish__). Output goes to `artifacts\msix\`.
+## Packaging & Deployment (v0.7.1)
+- **Package identity**: `src/FlowRate/Package.appxmanifest` — `RejectH0.FlowRate`, publisher `CN=flowrate.tech`. Keep the manifest `Version` in sync with the csproj `<Version>`.
+- **MSIX (single-project)**: `EnableMsixTooling` is on; signing is **off by default** (`AppxPackageSigningEnabled=false`) so plain builds never fail. To produce a signed sideload package, pass `-p:GenerateAppxPackageOnBuild=true -p:AppxPackageSigningEnabled=true -p:PackageCertificateThumbprint=<thumbprint>` (or use VS __Package and Publish__). Output goes to `artifacts\msix\`.
+- **Signing certificate (temporary)**: currently a **self-signed** code-signing cert, subject `CN=flowrate.tech` (must match the manifest Publisher), thumbprint `2D2058E79079BFA646967B0E7B2EC622323F8F5A` in `Cert:\CurrentUser\My`, expires 2027-08-19. To sideload, export the cert (`.cer`) and install it to **LocalMachine \ Trusted People** on the target machine, then install the `.msix`. `Get-AuthenticodeSignature` reports `UnknownError` until the cert is trusted — expected for self-signed. **TODO**: replace with the public flowrate.tech certificate once Azure Artifact Signing validation completes (see TODO.md).
+- **Trimming**: `PublishTrimmed=False` globally in the csproj — reflection-based System.Text.Json (parser/history/settings/export) is not trim-safe (IL2026).
 - **Standalone (unpackaged)**: `dotnet publish src/FlowRate/FlowRate.csproj -c Release -p:PublishProfile=win-x64-unpackaged` → self-contained folder at `bin\Release\...\win-x64\publish-unpackaged\` (~267 MB). Uses `WindowsPackageType=None` + `WindowsAppSDKSelfContained=true`; no `dotnet run` identity registration needed. **Trimming stays disabled** in this profile — WinUI 3 XAML reflection breaks under trimming.
 - **Launch profiles**: `FlowRate (Package)` runs with MSIX identity; `FlowRate (Unpackaged)` runs unpackaged via debug identity.
 
