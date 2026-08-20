@@ -13,3 +13,6 @@
 # MSIX/package build outputs
 artifacts/
 release-v*/
+
+# MSBuild file-logger output
+*.log
