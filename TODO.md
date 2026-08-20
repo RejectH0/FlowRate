@@ -2,7 +2,14 @@
 
 Living task list. Update every iteration. Completed items move to CHANGELOG.md.
 
-## Current Iteration (v0.7.1 — Self-Signed MSIX Sideload Pipeline) — DONE
+## Current Iteration (v0.7.2 — UI Header Consistency & Diagnostic Log Export) — DONE
+- [x] Standardize all five card headers to `BrandSubtitleText` Normal Case (no ALL-CAPS)
+- [x] Benchmark lifecycle logging (parameters, iperf3 path/args, exit code, parse outcome, errors)
+- [x] `DiagnosticsService` — diagnostics zip (recent logs + settings.json + environment summary)
+- [x] Info dialog: "Open Logs Folder" + "Export Diagnostics" buttons
+- [ ] User smoke-test: verify header consistency and export a diagnostics bundle
+
+## Previous Iteration (v0.7.1 — Self-Signed MSIX Sideload Pipeline) — DONE
 - [x] Self-signed code-signing certificate `CN=flowrate.tech` in `Cert:\CurrentUser\My` (thumbprint `2D2058E79079BFA646967B0E7B2EC622323F8F5A`, expires 2027-08-19)
 - [x] Signed MSIX build via MSBuild (`GenerateAppxPackageOnBuild` + `PackageCertificateThumbprint`) → `artifacts\msix\FlowRate_0.7.1.0_x64_Test\FlowRate_0.7.1.0_x64.msix`
 - [x] Trimming disabled globally (`PublishTrimmed=False`) — reflection-based System.Text.Json is not trim-safe; IL2026/IL2104 warnings eliminated

@@ -41,6 +41,7 @@ Layered, one-way dependencies (UI → Services → Domain ← Transport):
 ## Persistence Paths
 - Settings/profiles: `%LOCALAPPDATA%\FlowRate\settings.json`
 - Run history: `%LOCALAPPDATA%\FlowRate\history\` (`index.json` capped at 100 runs)
+- Logs: `%LOCALAPPDATA%\FlowRate\logs\flowrate-yyyyMMdd.log` (benchmark lifecycle, errors)
 
 ## Packaging & Deployment (v0.7.1)
 - **Package identity**: `src/FlowRate/Package.appxmanifest` — `RejectH0.FlowRate`, publisher `CN=flowrate.tech`. Keep the manifest `Version` in sync with the csproj `<Version>`.
@@ -57,6 +58,8 @@ Every iteration ends with: build + full test run, meaningful updates to all four
 ## Services (FlowRate.Core)
 - `Iperf3Locator` — resolves iperf3.exe (app base dir wins over PATH) and reads `--version`; used by the startup gate, the Info dialog, and `Iperf3Service`.
 - `UpdateService` — GitHub `releases/latest` checks for `RejectH0/FlowRate` and `ar51an/iperf3-win-builds` (unauthenticated, 60 req/hr; manual checks only).
+- `Logger` — thread-safe file logger (`Diagnostics/Logger.cs`); v0.7.2 logs the full benchmark lifecycle (params, iperf3 path/args, exit code, parse outcome).
+- `DiagnosticsService` — builds a diagnostics zip (≤7 recent logs + settings.json + environment.txt) for GitHub Issue reports; exposed via the Info dialog ("Open Logs Folder" / "Export Diagnostics").
 
 ## Documentation Policy
 Every iteration must meaningfully update (no null updates):

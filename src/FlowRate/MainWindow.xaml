@@ -152,7 +152,7 @@
 					VerticalAlignment="Top"
 					Style="{StaticResource BrandCard}">
 					<StackPanel Spacing="14">
-						<TextBlock Style="{StaticResource BrandCaptionText}" Text="TEST CONFIGURATION" />
+						<TextBlock Style="{StaticResource BrandSubtitleText}" Text="Test Configuration" />
 
 						<!--  Profiles drawer  -->
 						<Expander
@@ -499,8 +499,8 @@
 							<Grid>
 								<TextBlock
 									VerticalAlignment="Center"
-									Style="{StaticResource BrandCaptionText}"
-									Text="RESULTS" />
+									Style="{StaticResource BrandSubtitleText}"
+									Text="Results" />
 								<StackPanel
 									HorizontalAlignment="Right"
 									Orientation="Horizontal"

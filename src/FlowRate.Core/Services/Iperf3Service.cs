@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
+using FlowRate.Core.Diagnostics;
 using FlowRate.Core.Domain;
 using FlowRate.Core.Iperf3;
 using FlowRate.Core.Iperf3.Transport;
@@ -60,18 +61,27 @@ public sealed class Iperf3Service
             serverAddress, port, durationSeconds, reverse, parallelStreams,
             udp, targetBitrateBitsPerSecond, windowSizeBytes);
 
+        Logger.Info($"Benchmark starting: iperf3 {args}");
+
         // Execute iperf3
         var (exitCode, stdout, stderr) = await ExecuteIperf3WithProgressAsync(args, cancellationToken);
+
+        Logger.Info($"iperf3 exited with code {exitCode} (stdout: {stdout?.Length ?? 0} chars, stderr: {stderr?.Length ?? 0} chars)");
 
         // If we got JSON output, try to parse it
         if (!string.IsNullOrWhiteSpace(stdout))
         {
             try
             {
-                return _parser.Parse(stdout);
+                var parsed = _parser.Parse(stdout);
+                Logger.Info(parsed.IsSuccess
+                    ? "Benchmark result parsed successfully"
+                    : $"Benchmark reported failure: {parsed.ErrorMessage}");
+                return parsed;
             }
             catch (Exception ex)
             {
+                Logger.Error("Failed to parse iperf3 output", ex);
                 return new BenchmarkResult
                 {
                     IsSuccess = false,
@@ -81,6 +91,7 @@ public sealed class Iperf3Service
         }
 
         // No stdout, return error
+        Logger.Warn($"iperf3 produced no output; exit code {exitCode}, stderr: {stderr}");
         return new BenchmarkResult
         {
             IsSuccess = false,
@@ -157,6 +168,8 @@ public sealed class Iperf3Service
             UseShellExecute = false,
             CreateNoWindow = true
         };
+
+        Logger.Info($"Launching iperf3: {startInfo.FileName}");
 
         using var process = new Process { StartInfo = startInfo };
 

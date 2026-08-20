@@ -150,6 +150,63 @@ public sealed partial class MainWindow : Window
         panel.Children.Add(checkButton);
         panel.Children.Add(updateStatus);
 
+        // Diagnostics: help users capture logs when filing GitHub Issues.
+        panel.Children.Add(new TextBlock { Text = "Diagnostics", FontWeight = Microsoft.UI.Text.FontWeights.SemiBold, Margin = new Thickness(0, 8, 0, 0) });
+        panel.Children.Add(new TextBlock
+        {
+            Text = "If something breaks, export a diagnostics bundle (recent logs, settings, environment info) and attach it to a GitHub Issue.",
+            TextWrapping = TextWrapping.Wrap,
+        });
+
+        var diagStatus = new TextBlock { TextWrapping = TextWrapping.Wrap, IsTextSelectionEnabled = true };
+        var diagButtons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 4, 0, 0) };
+
+        var openLogsButton = new Button { Content = "Open Logs Folder" };
+        openLogsButton.Click += async (_, _) =>
+        {
+            try
+            {
+                System.IO.Directory.CreateDirectory(FlowRate.Core.Diagnostics.Logger.LogDirectory);
+                _ = await Windows.System.Launcher.LaunchFolderPathAsync(FlowRate.Core.Diagnostics.Logger.LogDirectory);
+            }
+            catch (Exception ex)
+            {
+                diagStatus.Text = $"Could not open logs folder: {ex.Message}";
+                FlowRate.Core.Diagnostics.Logger.Error("Failed to open logs folder", ex);
+            }
+        };
+
+        var exportDiagButton = new Button { Content = "Export Diagnostics" };
+        exportDiagButton.Click += (_, _) =>
+        {
+            try
+            {
+                exportDiagButton.IsEnabled = false;
+                var destination = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    FlowRate.Core.Diagnostics.DiagnosticsService.SuggestFileName());
+                FlowRate.Core.Diagnostics.DiagnosticsService.CreateBundle(
+                    appVersion.ToString(3),
+                    destination,
+                    FlowRate.Core.Settings.SettingsService.SettingsPath);
+                diagStatus.Text = $"Diagnostics saved to:\n{destination}";
+            }
+            catch (Exception ex)
+            {
+                diagStatus.Text = $"Export failed: {ex.Message}";
+                FlowRate.Core.Diagnostics.Logger.Error("Failed to export diagnostics bundle", ex);
+            }
+            finally
+            {
+                exportDiagButton.IsEnabled = true;
+            }
+        };
+
+        diagButtons.Children.Add(openLogsButton);
+        diagButtons.Children.Add(exportDiagButton);
+        panel.Children.Add(diagButtons);
+        panel.Children.Add(diagStatus);
+
         var dialog = new ContentDialog
         {
             XamlRoot = Content.XamlRoot,

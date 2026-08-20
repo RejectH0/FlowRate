@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.7.2] - UI Header Consistency & Diagnostic Log Export
+
+### Changed
+- **Card headers standardized** (`src/FlowRate/MainWindow.xaml`): all five card titles ("Test Configuration", "Current Throughput", "Throughput Over Time", "Results", "Run History") now use the same `BrandSubtitleText` style (18pt SemiBold) in Normal Case. "TEST CONFIGURATION" and "RESULTS" previously used the 12pt ALL-CAPS caption style.
+- **Version bumped to 0.7.2** (`FlowRate.csproj`, `Package.appxmanifest`).
+
+### Added
+- **Benchmark lifecycle logging** (`MainViewModel`, `Iperf3Service`): each run now logs its full parameter set, the resolved iperf3 executable path, launch arguments, process exit code, output sizes, parse outcome, and success/failure/cancel/exception to `%LOCALAPPDATA%\FlowRate\logs\flowrate-yyyyMMdd.log` via the existing `Logger`.
+- **DiagnosticsService** (`src/FlowRate.Core/Diagnostics/DiagnosticsService.cs`): builds a diagnostics zip containing up to 7 recent log files, `settings.json`, and an `environment.txt` summary (app version, OS, architectures, runtime). Log files are read with `FileShare.ReadWrite` so in-use logs are still captured; individual file failures are logged and skipped.
+- **Info dialog Diagnostics section** (`MainWindow.xaml.cs`): "Open Logs Folder" opens `%LOCALAPPDATA%\FlowRate\logs`, and "Export Diagnostics" writes `flowrate-diagnostics-yyyyMMdd-HHmmss.zip` to Documents so users can attach it to GitHub Issues.
+
+---
+
+## [0.7.1-release] - First Public GitHub Release
+
 ### Added
 - **First public GitHub Release (v0.7.1)**: repository made public; tag `v0.7.1` pushed and release published at `https://github.com/RejectH0/FlowRate/releases/tag/v0.7.1` with four assets — standalone zip (`FlowRate-0.7.1-win-x64-standalone.zip`, ~98.5 MB), signed MSIX (`FlowRate_0.7.1.0_x64.msix`, ~75.1 MB), the self-signed trust certificate (`.cer`), and `INSTALL.md`. Verified `releases/latest` API returns the release, so the in-app update check now has live data. Release staging folders ignored via `release-v*/` in `.gitignore`.
 

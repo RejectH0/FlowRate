@@ -290,6 +290,8 @@ public partial class MainViewModel : ObservableObject
 
         _cts = new CancellationTokenSource();
 
+        Logger.Info($"Benchmark requested: server={ServerAddress}:{Port} duration={DurationSeconds}s streams={ParallelStreams} udp={UdpMode} reverse={ReverseMode} bitrate={TargetBitrateMbps}Mbps window={WindowSizeKB}KB");
+
         try
         {
             long? bitrateBps = TargetBitrateMbps > 0
@@ -316,22 +318,26 @@ public partial class MainViewModel : ObservableObject
                 ResultSummary = FormatSuccessResult(result);
                 RememberServer(ServerAddress);
                 RecordHistory(result);
+                Logger.Info("Benchmark completed successfully");
             }
             else
             {
                 StatusMessage = "Benchmark failed";
                 ResultSummary = $"Error: {result.ErrorMessage}";
+                Logger.Warn($"Benchmark failed: {result.ErrorMessage}");
             }
         }
         catch (OperationCanceledException)
         {
             StatusMessage = "Benchmark cancelled";
             ResultSummary = "Benchmark cancelled by user.";
+            Logger.Info("Benchmark cancelled by user");
         }
         catch (Exception ex)
         {
             StatusMessage = "Error running benchmark";
             ResultSummary = $"Exception: {ex.Message}";
+            Logger.Error("Unhandled exception while running benchmark", ex);
         }
         finally
         {
