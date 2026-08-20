@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.2] - UI Header Consistency & Diagnostic Log Export
 
+### Fixed
+- **Header version stuck at v0.7.0** (`FlowRate.csproj`): explicit `<AssemblyVersion>`/`<FileVersion>` properties were frozen at `0.7.0.0` and overrode the SDK-derived value that the header reads at runtime. Removed both so they auto-derive from `<Version>` — one source of truth. Verified: published DLL now reports `FileVersion 0.7.2.0` and the header shows `(v0.7.2)`.
+
 ### Changed
 - **Card headers standardized** (`src/FlowRate/MainWindow.xaml`): all five card titles ("Test Configuration", "Current Throughput", "Throughput Over Time", "Results", "Run History") now use the same `BrandSubtitleText` style (18pt SemiBold) in Normal Case. "TEST CONFIGURATION" and "RESULTS" previously used the 12pt ALL-CAPS caption style.
 - **Version bumped to 0.7.2** (`FlowRate.csproj`, `Package.appxmanifest`).
