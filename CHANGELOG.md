@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **Header version formatting** (`src/FlowRate/ViewModels/MainViewModel.cs`): the header label is bound to the assembly version but formatted it as `v{Major}.{Minor}{Build}` (rendering 0.7.1 as "v0.71"). Now formats as `v{Major}.{Minor}.{Build}` so the display always tracks `<Version>` in `FlowRate.csproj`.
+- **README audit**: features section was stuck at v0.5.x; rewrote it as a categorized v0.7.1 feature list (benchmarking, persistence, app experience, deployment, engineering), corrected the project structure tree (Assets, Settings, assets/, docs/, TODO.md), refreshed Quick Start, status line, and footer.
 - **Missing icons in unpackaged deployment** (`src/FlowRate/FlowRate.csproj`): `Assets\` content wasn't copied to the publish output, so `AppWindow.SetIcon` silently failed (generic Alt+Tab/title-bar icon) and the title-bar image had nothing to load. `AppIcon.ico`, `Square44x44Logo.scale-100.png`, and `HeaderIcon.png` now use `CopyToOutputDirectory=PreserveNewest`.
 - **Header badge showed generic glyph** (`src/FlowRate/MainWindow.xaml`): the branded header used a drawn gradient square with a font glyph instead of the app icon. Replaced with an `<Image>` of `Assets/HeaderIcon.png` (the v2 `app-icon-128.png`).
 

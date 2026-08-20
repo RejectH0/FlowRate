@@ -18,7 +18,7 @@ public partial class MainViewModel : ObservableObject
     private readonly DispatcherQueue _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
     private CancellationTokenSource? _cts;
 
-	/// <summary>App version string shown in the header, formatted as "v0.60".</summary>
+	/// <summary>App version string shown in the header, formatted as "v0.7.1".</summary>
 	[ObservableProperty]
 	public partial string AppVersion { get; set; } = FormatVersion();
 
@@ -29,7 +29,7 @@ public partial class MainViewModel : ObservableObject
 	private static string FormatVersion()
 	{
 		var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-		return v is null ? "(v0.0)" : $"(v{v.Major}.{v.Minor}{v.Build})";
+		return v is null ? "(v0.0.0)" : $"(v{v.Major}.{v.Minor}.{v.Build})";
 	}
 
     public MainViewModel()
