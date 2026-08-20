@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **First public GitHub Release (v0.7.1)**: repository made public; tag `v0.7.1` pushed and release published at `https://github.com/RejectH0/FlowRate/releases/tag/v0.7.1` with four assets — standalone zip (`FlowRate-0.7.1-win-x64-standalone.zip`, ~98.5 MB), signed MSIX (`FlowRate_0.7.1.0_x64.msix`, ~75.1 MB), the self-signed trust certificate (`.cer`), and `INSTALL.md`. Verified `releases/latest` API returns the release, so the in-app update check now has live data. Release staging folders ignored via `release-v*/` in `.gitignore`.
+
 ### Fixed
 - **Header version formatting** (`src/FlowRate/ViewModels/MainViewModel.cs`): the header label is bound to the assembly version but formatted it as `v{Major}.{Minor}{Build}` (rendering 0.7.1 as "v0.71"). Now formats as `v{Major}.{Minor}.{Build}` so the display always tracks `<Version>` in `FlowRate.csproj`.
 - **README audit**: features section was stuck at v0.5.x; rewrote it as a categorized v0.7.1 feature list (benchmarking, persistence, app experience, deployment, engineering), corrected the project structure tree (Assets, Settings, assets/, docs/, TODO.md), refreshed Quick Start, status line, and footer.

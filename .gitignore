@@ -12,3 +12,4 @@
 
 # MSIX/package build outputs
 artifacts/
+release-v*/

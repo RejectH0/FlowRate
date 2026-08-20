@@ -22,7 +22,8 @@ Living task list. Update every iteration. Completed items move to CHANGELOG.md.
 - [ ] User smoke-test: title bar, taskbar icon, Info dialog, missing-iperf3 path
 
 ## Next Up
-- [ ] Publish first GitHub Release (v0.7.0) so the FlowRate update check has data
+- [x] Publish first GitHub Release (v0.7.1) so the FlowRate update check has data — repo made public, `releases/latest` verified returning `v0.7.1` with 4 assets
+- [ ] Pick a license before wider distribution (release notes currently say "License: TBD")
 - [ ] Full auto-update (download + install) once signing/hosting via flowrate.tech is decided
 - [ ] Smoke-test packaged app: settings, history, and export paths under package identity
 
