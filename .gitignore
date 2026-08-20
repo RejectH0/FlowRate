@@ -9,3 +9,6 @@
 !fixtures/
 
 *.bak
+
+# MSIX/package build outputs
+artifacts/

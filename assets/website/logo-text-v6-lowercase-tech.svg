@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="200" viewBox="0 0 800 200">
+  <!-- FlowRate text logo — Variation 6: Lowercase modern with dot-tech accent (flowrate.tech friendly) -->
+  <rect width="800" height="200" fill="none"/>
+  <text x="380" y="128" text-anchor="middle"
+		font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="92" font-weight="600" letter-spacing="-2">
+	<tspan fill="#0090A0">flow</tspan><tspan fill="#00B4C8">rate</tspan>
+  </text>
+  <circle cx="632" cy="118" r="10" fill="#00B4C8"/>
+  <text x="652" y="128" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif"
+		font-size="48" font-weight="400" fill="#5A6E72">tech</text>
+</svg>

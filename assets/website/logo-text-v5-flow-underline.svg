@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="200" viewBox="0 0 800 200">
+  <!-- FlowRate text logo — Variation 5: Monogram-style with flow underline sweep -->
+  <defs>
+	<linearGradient id="sweep" x1="0%" y1="0%" x2="100%" y2="0%">
+	  <stop offset="0%"   stop-color="#00B4C8" stop-opacity="0"/>
+	  <stop offset="35%"  stop-color="#00B4C8"/>
+	  <stop offset="100%" stop-color="#009090"/>
+	</linearGradient>
+  </defs>
+  <rect width="800" height="200" fill="none"/>
+  <text x="400" y="118" text-anchor="middle"
+		font-family="Segoe UI, Helvetica Neue, Arial, sans-serif"
+		font-size="92" font-weight="600" letter-spacing="2" fill="#0B2B31">FlowRate</text>
+  <path d="M 170 148 C 320 168, 480 128, 630 150" stroke="url(#sweep)" stroke-width="10" fill="none" stroke-linecap="round"/>
+</svg>

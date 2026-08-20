@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Website/brand assets** (`assets/`): icon exports extracted from the app's `AppIcon.ico` (`flowrate-icon-1024x768.png`, `flowrate-icon-1024.png`, exact `flowrate-icon-256.png`), six SVG text-logo variations, a brand color swatch (palette sampled from the icon), and a README documenting the palette. Extraction scripts live in `assets/tools/`.
+
+---
+
 ## [0.7.1] - Self-Signed MSIX Sideload Pipeline
 
 ### Added
