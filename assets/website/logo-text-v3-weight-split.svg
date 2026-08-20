@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="800" height="200" viewBox="0 0 800 200">
-  <!-- FlowRate text logo — Variation 3: Two-tone weight split ("Flow" light, "Rate" bold) -->
-  <rect width="800" height="200" fill="none"/>
-  <text x="400" y="128" text-anchor="middle"
-		font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="96">
-	<tspan font-weight="300" fill="#0090A0">Flow</tspan><tspan font-weight="700" fill="#00B4C8">Rate</tspan>
-  </text>
-</svg>

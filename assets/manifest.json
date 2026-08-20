@@ -1,0 +1,33 @@
+{
+  "package": "FlowRate Visual Assets v2",
+  "approved_direction": "A - evolved cyan/teal palette with restrained violet accents",
+  "canonical_sources": {
+    "app_icon": "source/flowrate-app-icon.svg",
+    "brand_mark": "source/flowrate-mark.svg",
+    "gauge_hero": "source/flowrate-gauge-hero.svg",
+    "logo_dark": "source/flowrate-logo-horizontal-dark.svg",
+    "logo_light": "source/flowrate-logo-horizontal-light.svg"
+  },
+  "palette": {
+    "Aqua": "#00E0D8",
+    "Sky": "#00B4E8",
+    "Indigo": "#6366F1",
+    "Violet": "#A855F7",
+    "Ink": "#0B1017",
+    "Surface": "#1A1D24",
+    "Elevated": "#262A33",
+    "Ice": "#F2F4F8",
+    "Muted": "#9CA3AF",
+    "Success": "#2DDC7E",
+    "Marker": "#FFC857"
+  },
+  "recommended_files": {
+    "windows_icon": "app/AppIcon.ico",
+    "website_logo_dark": "website/flowrate-logo-horizontal-dark.svg",
+    "website_logo_light": "website/flowrate-logo-horizontal-light.svg",
+    "website_hero": "website/flowrate-gauge-hero.svg",
+    "website_screenshot": "website/flowrate-app-screenshot.webp",
+    "open_graph": "website/flowrate-og-1200x630.png",
+    "favicon": "website/favicon.ico"
+  }
+}

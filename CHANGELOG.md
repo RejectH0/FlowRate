@@ -9,8 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **New brand assets v2 ingested** (`assets/`, `src/FlowRate/Assets/`): the approved flowrate-assets-v2 set (app icons, brand palette, logos, wordmarks, gauge hero, website favicons/OG images, concept board) replaced the interim generated assets. The application's `AppIcon.ico` was replaced with the new artwork and all ten MSIX tile/logo PNGs (Square44x44/150x150, Wide310x150, SplashScreen, StoreLogo, LockScreenLogo) were regenerated from `app-icon-1024.png` via `assets/tools/generate-msix-assets.ps1`.
+
 ### Added
-- **Website/brand assets** (`assets/`): icon exports extracted from the app's `AppIcon.ico` (`flowrate-icon-1024x768.png`, `flowrate-icon-1024.png`, exact `flowrate-icon-256.png`), six SVG text-logo variations, a brand color swatch (palette sampled from the icon), and a README documenting the palette. Extraction scripts live in `assets/tools/`.
+- **Website/brand assets** (`assets/`): icon exports extracted from the app's `AppIcon.ico` (`flowrate-icon-1024x768.png`, `flowrate-icon-1024.png`, exact `flowrate-icon-256.png`), six SVG text-logo variations, a brand color swatch (palette sampled from the icon), and a README documenting the palette. Extraction scripts live in `assets/tools/`. *(Superseded in the same cycle by the approved v2 asset set.)*
 
 ---
 

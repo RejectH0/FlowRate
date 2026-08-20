@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+
+<g filter="none"><path d="M 224.07 450.13 A 310 310 0 0 1 249.82 399.58" fill="none" stroke="#00E0D8" stroke-width="54" stroke-linecap="butt"/>
+<path d="M 260.41 383.88 A 310 310 0 0 1 297.63 341.07" fill="none" stroke="#00D2DD" stroke-width="54" stroke-linecap="butt"/>
+<path d="M 311.70 328.40 A 310 310 0 0 1 358.17 295.86" fill="none" stroke="#00C4E2" stroke-width="54" stroke-linecap="butt"/>
+<path d="M 374.89 286.97 A 310 310 0 0 1 427.85 266.64" fill="none" stroke="#00B6E7" stroke-width="54" stroke-linecap="butt"/>
+<path d="M 446.22 262.06 A 310 310 0 0 1 502.53 255.14" fill="none" stroke="#1C9EEB" stroke-width="54" stroke-linecap="butt"/>
+<path d="M 521.47 255.14 A 310 310 0 0 1 577.78 262.06" fill="none" stroke="#3E83EE" stroke-width="54" stroke-linecap="butt"/>
+<path d="M 596.15 266.64 A 310 310 0 0 1 649.11 286.97" fill="none" stroke="#5F69F1" stroke-width="54" stroke-linecap="butt"/>
+<path d="M 665.83 295.86 A 310 310 0 0 1 712.30 328.40" fill="none" stroke="#7861F3" stroke-width="54" stroke-linecap="butt"/>
+<path d="M 726.37 341.07 A 310 310 0 0 1 763.59 383.88" fill="none" stroke="#905BF5" stroke-width="54" stroke-linecap="butt"/>
+<path d="M 774.18 399.58 A 310 310 0 0 1 799.93 450.13" fill="none" stroke="#A855F7" stroke-width="54" stroke-linecap="butt"/></g>
+<line x1="278.96" y1="480.18" x2="244.19" y2="467.52" stroke="#F2F4F8" stroke-width="5" opacity="0.92" stroke-linecap="round"/>
+<line x1="288.43" y1="442.35" x2="262.13" y2="427.92" stroke="#F2F4F8" stroke-width="3" opacity="0.55" stroke-linecap="round"/>
+<line x1="309.69" y1="409.77" x2="285.89" y2="391.50" stroke="#F2F4F8" stroke-width="3" opacity="0.55" stroke-linecap="round"/>
+<line x1="335.66" y1="380.80" x2="314.92" y2="359.13" stroke="#F2F4F8" stroke-width="3" opacity="0.55" stroke-linecap="round"/>
+<line x1="369.75" y1="361.85" x2="348.53" y2="331.54" stroke="#F2F4F8" stroke-width="5" opacity="0.92" stroke-linecap="round"/>
+<line x1="399.22" y1="336.30" x2="385.95" y2="309.39" stroke="#F2F4F8" stroke-width="3" opacity="0.55" stroke-linecap="round"/>
+<line x1="435.32" y1="321.80" x2="426.30" y2="293.19" stroke="#F2F4F8" stroke-width="3" opacity="0.55" stroke-linecap="round"/>
+<line x1="473.21" y1="312.97" x2="468.64" y2="283.32" stroke="#F2F4F8" stroke-width="3" opacity="0.55" stroke-linecap="round"/>
+<line x1="512.00" y1="317.00" x2="512.00" y2="280.00" stroke="#F2F4F8" stroke-width="5" opacity="0.92" stroke-linecap="round"/>
+<line x1="550.79" y1="312.97" x2="555.36" y2="283.32" stroke="#F2F4F8" stroke-width="3" opacity="0.55" stroke-linecap="round"/>
+<line x1="588.68" y1="321.80" x2="597.70" y2="293.19" stroke="#F2F4F8" stroke-width="3" opacity="0.55" stroke-linecap="round"/>
+<line x1="624.78" y1="336.30" x2="638.05" y2="309.39" stroke="#F2F4F8" stroke-width="3" opacity="0.55" stroke-linecap="round"/>
+<line x1="654.25" y1="361.85" x2="675.47" y2="331.54" stroke="#F2F4F8" stroke-width="5" opacity="0.92" stroke-linecap="round"/>
+<line x1="688.34" y1="380.80" x2="709.08" y2="359.13" stroke="#F2F4F8" stroke-width="3" opacity="0.55" stroke-linecap="round"/>
+<line x1="714.31" y1="409.77" x2="738.11" y2="391.50" stroke="#F2F4F8" stroke-width="3" opacity="0.55" stroke-linecap="round"/>
+<line x1="735.57" y1="442.35" x2="761.87" y2="427.92" stroke="#F2F4F8" stroke-width="3" opacity="0.55" stroke-linecap="round"/>
+<line x1="745.04" y1="480.18" x2="779.81" y2="467.52" stroke="#F2F4F8" stroke-width="5" opacity="0.92" stroke-linecap="round"/>
+<path d="M 162 674 C 310 656, 380 610, 505 626 C 640 645, 730 700, 868 688" fill="none" stroke="#00E0D8" stroke-width="7.0" opacity="0.96" stroke-linecap="round"/>
+<path d="M 162 686 C 310 663, 380 617, 505 631 C 640 651, 730 697, 868 683" fill="none" stroke="#00CBE0" stroke-width="6.7" opacity="0.89" stroke-linecap="round"/>
+<path d="M 162 699 C 310 671, 380 624, 505 636 C 640 657, 730 694, 868 678" fill="none" stroke="#00B6E7" stroke-width="6.3" opacity="0.82" stroke-linecap="round"/>
+<path d="M 162 712 C 310 679, 380 631, 505 641 C 640 663, 730 691, 868 673" fill="none" stroke="#2D91EC" stroke-width="6.0" opacity="0.75" stroke-linecap="round"/>
+<path d="M 162 725 C 310 687, 380 638, 505 646 C 640 669, 730 688, 868 668" fill="none" stroke="#5F69F1" stroke-width="5.6" opacity="0.68" stroke-linecap="round"/>
+<path d="M 162 738 C 310 695, 380 645, 505 651 C 640 675, 730 685, 868 663" fill="none" stroke="#845EF4" stroke-width="5.2" opacity="0.61" stroke-linecap="round"/>
+<path d="M 162 751 C 310 703, 380 652, 505 656 C 640 681, 730 682, 868 658" fill="none" stroke="#A855F7" stroke-width="4.9" opacity="0.54" stroke-linecap="round"/>
+<circle cx="186" cy="632" r="4.5" fill="#00E0D8" opacity="0.9"/>
+<circle cx="206" cy="619" r="4.5" fill="#00CEDF" opacity="0.9"/>
+<circle cx="230" cy="608" r="4.5" fill="#00BCE5" opacity="0.9"/>
+<circle cx="248" cy="595" r="4.5" fill="#18A1EA" opacity="0.9"/>
+<circle cx="828" cy="624" r="4.5" fill="#4280EE" opacity="0.9"/>
+<circle cx="851" cy="612" r="4.5" fill="#6A64F2" opacity="0.9"/>
+<circle cx="873" cy="601" r="4.5" fill="#895DF4" opacity="0.9"/>
+<circle cx="891" cy="590" r="4.5" fill="#A855F7" opacity="0.9"/>
+<g>
+<path d="M 512 607 L 720 412" stroke="#00B4E8" stroke-width="28" opacity="0.35" stroke-linecap="round"/>
+<path d="M 512 607 L 724 404" stroke="#F2F4F8" stroke-width="18" stroke-linecap="round"/>
+<circle cx="512" cy="607" r="44" fill="#F2F4F8"/>
+<circle cx="512" cy="607" r="20" fill="#161C25"/>
+<circle cx="512" cy="607" r="8" fill="#00E0D8"/>
+</g>
+</svg>

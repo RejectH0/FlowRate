@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="800" height="200" viewBox="0 0 800 200">
-  <!-- FlowRate text logo — Variation 1: Solid brand teal, bold sans -->
-  <rect width="800" height="200" fill="none"/>
-  <text x="400" y="128" text-anchor="middle"
-		font-family="Segoe UI, Helvetica Neue, Arial, sans-serif"
-		font-size="96" font-weight="700" fill="#00A0AB">FlowRate</text>
-</svg>
