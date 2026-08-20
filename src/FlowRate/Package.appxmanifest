@@ -11,7 +11,7 @@
   <Identity
     Name="RejectH0.FlowRate"
     Publisher="CN=flowrate.tech"
-    Version="0.7.2.0" />
+    Version="0.7.3.0" />
 
   <mp:PhoneIdentity PhoneProductId="D442A4DB-FE60-470E-9A72-D08523FE55C3" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

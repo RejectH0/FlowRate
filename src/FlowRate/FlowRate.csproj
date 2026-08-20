@@ -16,7 +16,7 @@
     <Nullable>enable</Nullable>
 	<Configurations>Debug;Release</Configurations>
 	<!-- Single source of truth: AssemblyVersion/FileVersion derive from Version automatically. -->
-	<Version>0.7.2</Version>
+	<Version>0.7.3</Version>
   </PropertyGroup>
 
   <!--

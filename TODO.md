@@ -2,7 +2,13 @@
 
 Living task list. Update every iteration. Completed items move to CHANGELOG.md.
 
-## Current Iteration (v0.7.2 — UI Header Consistency & Diagnostic Log Export) — DONE
+## Current Iteration (v0.7.3 — Throughput Card Jitter Fix) — DONE
+- [x] Tabular (fixed-width) numerals on live Average/Current throughput readouts
+- [x] `MinWidth="250"` on readout container to reserve stable card width
+- [x] User smoke-test: card border no longer wiggles during live updates
+- [x] Signed MSIX + GitHub Release v0.7.3
+
+## Previous Iteration (v0.7.2 — UI Header Consistency & Diagnostic Log Export) — DONE
 - [x] Standardize all five card headers to `BrandSubtitleText` Normal Case (no ALL-CAPS)
 - [x] Benchmark lifecycle logging (parameters, iperf3 path/args, exit code, parse outcome, errors)
 - [x] `DiagnosticsService` — diagnostics zip (recent logs + settings.json + environment summary)

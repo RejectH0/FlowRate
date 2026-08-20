@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.3] - Throughput Card Jitter Fix
+
+### Fixed
+- **Throughput card border wiggle** (`src/FlowRate/MainWindow.xaml`): the live Average/Current readouts used proportional-width digits, so the animated numbers changed rendered width every frame and the responsive card border wiggled. Both readout `TextBlock`s now set `Typography.NumeralAlignment="Tabular"` (fixed-width digits — same font, size, and style) and the readout container reserves `MinWidth="250"` so the card holds a stable width during live updates.
+
+### Changed
+- **Version bumped to 0.7.3** (`FlowRate.csproj`, `Package.appxmanifest`).
+
+---
+
 ## [0.7.2] - UI Header Consistency & Diagnostic Log Export
 
 ### Fixed

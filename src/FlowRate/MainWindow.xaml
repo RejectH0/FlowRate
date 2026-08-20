@@ -423,6 +423,7 @@
 
 								<StackPanel
 									Grid.Column="1"
+									MinWidth="250"
 									VerticalAlignment="Center"
 									Spacing="18">
 									<!--  Current  -->
@@ -437,6 +438,7 @@
 											<TextBlock Style="{StaticResource BrandCaptionText}" Text="AVERAGE (NEEDLE)" />
 										</StackPanel>
 										<TextBlock
+											Typography.NumeralAlignment="Tabular"
 											behaviors:NumberAnimator.Format="F3"
 											behaviors:NumberAnimator.Suffix=" Gbps"
 											behaviors:NumberAnimator.Value="{x:Bind ViewModel.AverageThroughputGbps, Mode=OneWay}"
@@ -456,6 +458,7 @@
 											<TextBlock Style="{StaticResource BrandCaptionText}" Text="CURRENT (MARKER)" />
 										</StackPanel>
 										<TextBlock
+											Typography.NumeralAlignment="Tabular"
 											behaviors:NumberAnimator.Format="F3"
 											behaviors:NumberAnimator.Suffix=" Gbps"
 											behaviors:NumberAnimator.Value="{x:Bind ViewModel.CurrentThroughputGbps, Mode=OneWay}"
