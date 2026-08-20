@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Missing icons in unpackaged deployment** (`src/FlowRate/FlowRate.csproj`): `Assets\` content wasn't copied to the publish output, so `AppWindow.SetIcon` silently failed (generic Alt+Tab/title-bar icon) and the title-bar image had nothing to load. `AppIcon.ico`, `Square44x44Logo.scale-100.png`, and `HeaderIcon.png` now use `CopyToOutputDirectory=PreserveNewest`.
+- **Header badge showed generic glyph** (`src/FlowRate/MainWindow.xaml`): the branded header used a drawn gradient square with a font glyph instead of the app icon. Replaced with an `<Image>` of `Assets/HeaderIcon.png` (the v2 `app-icon-128.png`).
+
 ### Changed
 - **New brand assets v2 ingested** (`assets/`, `src/FlowRate/Assets/`): the approved flowrate-assets-v2 set (app icons, brand palette, logos, wordmarks, gauge hero, website favicons/OG images, concept board) replaced the interim generated assets. The application's `AppIcon.ico` was replaced with the new artwork and all ten MSIX tile/logo PNGs (Square44x44/150x150, Wide310x150, SplashScreen, StoreLogo, LockScreenLogo) were regenerated from `app-icon-1024.png` via `assets/tools/generate-msix-assets.ps1`.
 

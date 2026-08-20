@@ -85,20 +85,14 @@
 					<ColumnDefinition Width="Auto" />
 				</Grid.ColumnDefinitions>
 
-				<!--  Accent glyph badge  -->
-				<Border
+				<!--  App icon badge  -->
+				<Image
 					Grid.Column="0"
 					Width="52"
 					Height="52"
 					Margin="0,0,16,0"
 					VerticalAlignment="Center"
-					Background="{StaticResource BrandAccentGradient}"
-					CornerRadius="14">
-					<FontIcon
-						FontSize="26"
-						Foreground="White"
-						Glyph="&#xE9D9;" />
-				</Border>
+					Source="Assets/HeaderIcon.png" />
 
 				<StackPanel Grid.Column="1" VerticalAlignment="Center">
 					<StackPanel Orientation="Horizontal" Spacing="8">
